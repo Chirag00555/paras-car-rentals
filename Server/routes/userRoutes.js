@@ -13,6 +13,7 @@
 // export default userRouter;
 
 import express from 'express';
+import { submitInquiry } from "../controllers/inquiryController.js";
 import { 
     getCars, 
     getUserData, 
@@ -27,13 +28,21 @@ import { protect } from '../middleware/auth.js';
 
 const userRouter = express.Router();
 
+userRouter.post("/test", (req, res) => {
+  console.log("TEST BODY:", req.body);
+  return res.status(200).json({
+    success: true,
+    body: req.body
+  });
+});
+
+
 userRouter.post('/register', registerUser);
 userRouter.post('/login', loginUser);
 userRouter.post('/verify-email-otp', verifyEmailOtp);
-
+userRouter.post("/submit", submitInquiry);
 userRouter.get('/data', protect, getUserData);
 userRouter.get('/cars', getCars);
-
 userRouter.post("/forgot-password", forgotPassword);
 userRouter.post("/reset-password", resetPassword);
 userRouter.post("/resend-otp", resendOtp);

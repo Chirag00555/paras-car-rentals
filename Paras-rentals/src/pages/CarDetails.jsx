@@ -70,7 +70,7 @@ const CarDetails = () => {
                 <hr className='border-borderColor my-6'/>
                 <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
                     {[
-                        {icon: assets.users_icon, text: `${car.sitting_capacity} Seats`},
+                        {icon: assets.users_icon, text: `${car.seating_capacity} Seats`},
                         {icon: assets.fuel_icon, text: car.fuel_type},
                         {icon: assets.car_icon, text: car.transmission},
                         {icon: assets.location_icon, text: car.location},
@@ -126,7 +126,7 @@ const CarDetails = () => {
             <div className='flex flex-col gap-2'>
                 <label htmlFor="return-date">Return date</label>
                 <input value={returnDate} onChange={(e)=>setReturnDate(e.target.value)}
-                type="date" className='border border-borderColor px-3 py-2 rounded-lg' required id='return-date'/>
+                type="date" className='border border-borderColor px-3 py-2 rounded-lg' required id='return-date' min={pickupDate}/>
             </div>
 
             <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>

@@ -46,10 +46,10 @@ const MyBookings = () => {
             key={booking._id} className='grid grid-cols-1 md:grid-cols-4 gap-6 p-6 border border-borderColor rounded-lg mt-5 first:mt-12'>
                 <div className='md:col-span-1'>
                     <div className='rounded-md overflow-hidden mb-3'>
-                        <img src={booking.car.image} alt="image" className='w-full h-auto aspect-video object-cover' />
+                        <img src={booking?.car?.image} alt="image" className='w-full h-auto aspect-video object-cover' />
                     </div>
-                    <p className='text-lg font-medium mt-2'>{booking.car.brand} {booking.car.model}</p>
-                    <p className='text-gray-500'>{booking.car.year} • {booking.car.category} • {booking.car.location}</p>
+                    <p className='text-lg font-medium mt-2'>{booking?.car?.brand} {booking.car?.model}</p>
+                    <p className='text-gray-500'>{booking.car?.year} • {booking.car?.category} • {booking?.car?.location}</p>
                 </div>
 
                 {/* booking info */}
@@ -72,7 +72,7 @@ const MyBookings = () => {
                         <img src={assets.location_icon_colored} alt="icon" className='w-4 h-4 mt-1'/>
                         <div>
                             <p className='text-gray-500'>Pickup Location</p>
-                            <p>{booking.car.location}</p>
+                            <p>{booking.car?.location}</p>
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,7 @@ import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import VerifyOtp from "./components/VerifyOtp";
+import Inquiry from './pages/Inquiry'
 import { Toaster } from 'react-hot-toast'
 import { useAppContext } from './context/AppContext'
 
@@ -39,7 +40,7 @@ const App = () => {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
+        <Route path="/inquiry" element={<Inquiry />} />
         <Route path='/owner' element={<Layout />}>
           <Route index element={<Dashboard/>}/>
           <Route path='add-car' element={<AddCar/>}/>
