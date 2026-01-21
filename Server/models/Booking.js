@@ -12,23 +12,46 @@ const bookingSchema = new mongoose.Schema({
         ref: 'User', 
         required: true,
     },
-    owner: {
-        type: String,
-        ref: 'User',
-        required: true,
-    },
-    pickupDate: {
-        type: Date,
-        required: true,
-    },
-    returnDate: {
-        type: Date,
-        required: true,
-    },
+    // pickupDate: {
+    //     type: Date,
+    //     required: true,
+    // },
+    // returnDate: {
+    //     type: Date,
+    //     required: true,
+    // },
     phone: {
         type: String,
         required: true
     },
+    pickupDateTime: {
+        type: Date,
+        required: true
+    },
+
+    returnDateTime: {
+        type: Date,
+        required: true
+    },
+
+    pickupService: {
+        type: Boolean,
+        default: false
+    },
+
+    dropService: {
+        type: Boolean,
+        default: false
+    },
+
+    pickupLocation: {
+        type: String,
+    },
+
+    dropLocation: {
+        type: String,
+    },
+
     status: {
         type: String,
         enum: ["pending", "confirmed", "cancelled"], 

@@ -42,6 +42,12 @@ const carSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+        
+    pricePer12Hours: {
+        type: Number,
+        required: true
+    },
+
     location: {
         type: String,
         required: true,

@@ -88,7 +88,19 @@ const ManageCars = () => {
                 </td>
 
                 <td className='p-3 max-md:hidden'>{car.category}</td>
-                <td className='p-3 max-md:hidden'>{currency} {car.pricePerDay}/Day</td>
+                
+                <td className='p-3 max-md:hidden'>
+                  
+                <div className="flex flex-col text-sm">
+                  <span className="font-medium">
+                    {currency}{car.pricePerDay} / day
+                  </span>
+                  <span className="text-gray-500">
+                    {currency}{car.pricePer12Hours ?? "—"} / 12 hrs
+                  </span>
+                </div>
+              </td>
+
 
                 <td className='p-3 max-md:hidden'>
                   <span className={`px-3 py-1 rounded-full text-sm ${car.isAvailable ? "bg-green-100 text-green-500" : "bg-red-100 text-red-500"}`}>

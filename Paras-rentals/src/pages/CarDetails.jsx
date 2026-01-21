@@ -9,36 +9,148 @@ import { motion } from 'motion/react'
 const CarDetails = () => {
 
     const {id} = useParams()
-    const {cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, phone, setPhone} = useAppContext()
+    const {cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, phone, setPhone, pickupService, setPickupService, pickupLocation, setPickupLocation, dropService, setDropService, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime} = useAppContext()
+
     const navigate = useNavigate()
     const [car, setCar] = useState(null)
     const currency = import.meta.env.VITE_CURRENCY
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const {data} = await axios.post('/api/bookings/create', {
-                car: id,
-                pickupDate, 
-                returnDate,
-                phone
-            })
+    const pickupCharge = pickupService ? 400 : 0
+    const dropCharge = dropService ? 400 : 0
 
-            if(data.success){
-                toast.success(data.message)
-                navigate('/my-bookings')
-            }else{
-                toast.error(data.message)
-            }
-        } catch (error) {
-            toast.error(error.message)
-            
+    const pickupDateTime =
+    pickupDate && pickupTime
+        ? new Date(`${pickupDate}T${pickupTime}`)
+        : null
+
+    const returnDateTime =
+    returnDate && returnTime
+        ? new Date(`${returnDate}T${returnTime}`)
+        : null
+    let totalHours = 0
+
+    if (pickupDateTime && returnDateTime) {
+    const diffMs = returnDateTime - pickupDateTime
+    totalHours = Math.ceil(diffMs / (1000 * 60 * 60))
+    }
+
+    let basePrice = 0
+
+    if (car && totalHours > 0) {
+    if (totalHours <= 12) {
+        basePrice = car.pricePer12Hours
+    } else {
+        const fullDays = Math.floor(totalHours / 24)
+        const remainingHours = totalHours % 24
+
+        basePrice = fullDays * car.pricePerDay
+
+        if (remainingHours > 0 && remainingHours <= 12) {
+        basePrice += car.pricePer12Hours
+        } else if (remainingHours > 12) {
+        basePrice += car.pricePerDay
         }
     }
+    }
+
+
+
+    const totalPrice = basePrice + pickupCharge + dropCharge
+
+    
+
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        // 1️⃣ basic validation
+        if (!pickupDate || !pickupTime || !returnDate || !returnTime) {
+            toast.error("Please select pickup and return date & time")
+            return
+        }
+
+        // 2️⃣ return-time restriction (frontend UX)
+        if (isInvalidReturnTime(returnTime)) {
+            toast.error("Car cannot be returned between 11:30 PM and 7:00 AM")
+            return
+        }
+
+        // 3️⃣ CREATE datetime strings (THIS IS THE KEY)
+        const pickupDateTime = `${pickupDate}T${pickupTime}`
+        const returnDateTime = `${returnDate}T${returnTime}`
+
+        // 4️⃣ Logical time validation
+        if (new Date(returnDateTime) <= new Date(pickupDateTime)) {
+            toast.error("Return time must be after pickup time")
+            return
+        }
+
+
+        try {
+            const { data } = await axios.post('/api/bookings/create', {
+            car: id,
+            pickupDateTime,      // ✅ NEW
+            returnDateTime,      // ✅ NEW
+            phone,
+            pickupService,
+            dropService,
+            pickupLocation,
+            dropLocation,
+            totalPrice
+            })
+
+            if (data.success) {
+            toast.success(data.message)
+
+            // optional: reset form
+            setPickupDate("")
+            setReturnDate("")
+            setPickupTime("")
+            setReturnTime("")
+            setPhone("")
+            setPickupService(false)
+            setDropService(false)
+            setPickupLocation("")
+            setDropLocation("")
+
+            navigate('/my-bookings')
+            } else {
+            toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+
+    const isInvalidReturnTime = (time) => {
+        const [h, m] = time.split(":").map(Number)
+
+        return (
+            (h === 23 && m >= 30) || // 11:30 PM onwards
+            (h >= 0 && h < 7)        // midnight to 7 AM
+        )
+    }
+
 
     useEffect(()=>{
         setCar(cars.find(car => car._id === id))
     },[cars, id])
+
+    useEffect(() => {
+        setPickupDate("")
+        setReturnDate("")
+        setPhone("")
+        setPickupService(false)
+        setDropService(false)
+        setPickupLocation("")
+        setDropLocation("")
+        setPickupTime("")
+        setReturnTime("")
+    }, [])
+
 
 
   return car ? (
@@ -117,7 +229,16 @@ const CarDetails = () => {
         transition={{ delay: 0.3, duration: 0.6 }}
         
         onSubmit={handleSubmit} className='shadow-lg h-max sticky top-18 rounded-xl p-6 space-y-6 text-gray-500'>
-            <p className='flex items-center justify-between text-2xl text-gray-800 font-semibold'>{currency}{car.pricePerDay} <span className='text-base text-gray-400 font-normal'>Per day</span></p>
+            <div className="space-y-1">
+                <p className='text-2xl font-semibold text-gray-800'>
+                    {currency}{car.pricePerDay}
+                    <span className='text-base text-gray-400 font-normal'> / day</span>
+                </p>
+                <p className="text-sm text-gray-500">
+                    {currency}{car.pricePer12Hours} / 12 hrs
+                </p>
+                </div>
+
 
             <hr className='border-borderColor my-6' />
 
@@ -127,16 +248,75 @@ const CarDetails = () => {
             </div>
 
             <div className='flex flex-col gap-2'>
+                <label>Pickup Time</label>
+                <input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)}
+                required
+                />
+            </div>            
+
+            <div className='flex flex-col gap-2'>
                 <label htmlFor="return-date">Return date</label>
                 <input value={returnDate} onChange={(e)=>setReturnDate(e.target.value)}
                 type="date" className='border border-borderColor px-3 py-2 rounded-lg' required id='return-date' min={pickupDate}/>
             </div>
 
             <div className='flex flex-col gap-2'>
+                <label>Return Time</label>
+                <input type="time" value={returnTime} onChange={(e) => setReturnTime(e.target.value)}
+                required
+                />
+            </div>   
+
+            <div className='flex flex-col gap-2'>
                 <label htmlFor="phone">Contact number</label>
                 <input value={phone} onChange={(e)=>setPhone(e.target.value)}
                 type="tel" className='border border-borderColor px-3 py-2 rounded-lg' placeholder='Enter Contact number' required id='phone' />
             </div>
+
+            <div className='flex flex-col gap-2'>
+                <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" checked={pickupService}     onChange={() => setPickupService(!pickupService)}
+                />
+                <span>Pickup Service (+ ₹400)</span>
+            </label>
+
+              {pickupService && (
+                <input type="text" placeholder="Enter pickup location"   value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)}
+                className="border px-3 py-2 rounded-lg"
+                required
+                />
+            )}
+            </div>
+
+            <div className='flex flex-col gap-2'>
+                <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" checked={dropService}     onChange={() => setDropService(!dropService)}
+                />
+                <span>Drop Service (+ ₹400)</span>
+            </label>
+
+              {dropService && (
+                <input type="text" placeholder="Enter drop location"   value={dropLocation} onChange={(e) => setDropLocation(e.target.value)}
+                className="border px-3 py-2 rounded-lg"
+                required
+                />
+            )}
+            </div>
+
+
+            <div className="mt-4 p-3 border rounded-lg bg-gray-50">
+                <p className="text-lg font-semibold">
+                    Total Fare: ₹{totalPrice}
+                </p>
+                <div className="text-sm text-gray-600 mt-2 space-y-1">
+                <p>Base Fare: ₹{basePrice}</p>
+
+                {pickupService && <p>Pickup Service: +₹400</p>}
+                {dropService && <p>Drop Service: +₹400</p>}
+                </div>
+
+            </div>
+
 
             <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>
 

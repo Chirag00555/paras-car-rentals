@@ -64,7 +64,7 @@ const MyBookings = () => {
                         <img src={assets.calendar_icon_colored} alt="icon" className='w-4 h-4 mt-1'/>
                         <div>
                             <p className='text-gray-500'>Rental Period</p>
-                            <p>{booking.pickupDate.split('T')[0]} To {booking.returnDate.split('T')[0]}</p>
+                            <p>{booking.pickupDateTime?.split("T")[0]} To {booking.returnDateTime?.split("T")}</p>
                         </div>
                     </div>
 

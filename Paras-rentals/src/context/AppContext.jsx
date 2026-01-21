@@ -22,6 +22,15 @@ export const AppProvider = ({children}) => {
     const [pickupDate, setPickupDate] = useState('')   
     const [returnDate, setReturnDate] = useState('')  
     const [phone, setPhone] = useState("")
+    const [pickupService, setPickupService] = useState(false)
+    const [dropService, setDropService] = useState(false)
+    const [pickupLocation, setPickupLocation] = useState("")
+    const [dropLocation, setDropLocation] = useState("")
+    const [pickupTime, setPickupTime] = useState("")
+    const [returnTime, setReturnTime] = useState("")
+    const [pricePer12Hours, setPricePer12Hours] = useState("")
+
+
 
     
     const [cars, setCars] = useState([])
@@ -82,7 +91,7 @@ export const AppProvider = ({children}) => {
     },[token])
 
     const value = {
-        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone
+        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours
     }
 
     return (
