@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { assets, dummyCarData } from '../assets/assets'
+import { assets} from '../assets/assets'
 import Loader from '../components/Loader'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
@@ -13,6 +13,8 @@ const CarDetails = () => {
 
     const navigate = useNavigate()
     const [car, setCar] = useState(null)
+    const [blockedSlots, setBlockedSlots] = useState([])
+
     const currency = import.meta.env.VITE_CURRENCY
 
     const pickupCharge = pickupService ? 400 : 0
@@ -152,6 +154,38 @@ const CarDetails = () => {
     }, [])
 
 
+    const fetchBlockedSlots = async () => {
+        try {
+            const { data } = await axios.get(
+            `/api/bookings/car/${car._id}/confirmed-bookings`
+            )
+
+            if (data.success) {
+            setBlockedSlots(data.bookings)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+        }
+
+        useEffect(() => {
+            if (car?._id) {
+                fetchBlockedSlots()
+            }
+        }, [car])
+
+        const formatDateTime = (date) =>
+            new Date(date).toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+        })
+
+
+
 
   return car ? (
     <div className='px-6 md:px-16 lg:px-24 xl:px-32 mt-16'>
@@ -223,12 +257,41 @@ const CarDetails = () => {
             </motion.div>
         </motion.div>
 
+                        
+          
+                        
+
+
         <motion.form 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
         
         onSubmit={handleSubmit} className='shadow-lg h-max sticky top-18 rounded-xl p-6 space-y-6 text-gray-500'>
+
+                        {/* 🔴 Confirmed Booked Slots */}
+            {blockedSlots.length > 0 && (
+                <div className="p-3 border border-red-200 rounded-md bg-red-50">
+                <h3 className="text-xs font-semibold text-red-600 mb-2">
+                    This car is already booked for
+                </h3>
+
+                <ul className="text-xs text-gray-700 space-y-1 max-h-32 overflow-y-auto">
+                    {blockedSlots.map((slot, index) => (
+                    <li key={index}>
+                        • {formatDateTime(slot.pickupDateTime)} →{" "}
+                        {formatDateTime(slot.returnDateTime)}
+                    </li>
+                    ))}
+                </ul>
+
+                <p className="text-[11px] text-gray-500 mt-1">
+                    *Includes 1 hour buffer after each booking
+                </p>
+                </div>
+            )}
+
+            
             <div className="space-y-1">
                 <p className='text-2xl font-semibold text-gray-800'>
                     {currency}{car.pricePerDay}
@@ -316,6 +379,9 @@ const CarDetails = () => {
                 </div>
 
             </div>
+
+
+            
 
 
             <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>

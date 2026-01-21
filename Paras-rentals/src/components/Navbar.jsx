@@ -25,7 +25,7 @@ const Navbar = () => {
     transition={{duration:0.5}}
     className={`flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 text-gray-600 border-b border-borderColor relative transition-all  ${location.pathname === "/" && "bg-light"} ` }>
     <Link to='/'>
-      <motion.img whileHover={{scale: 1.05}} src={assets.logo} alt="logo" className='h-8'/>
+      <motion.img whileHover={{scale: 1.05}} src={assets.logoNew} className="h-12 w-auto" alt="logo"/>
     </Link>
 
     <div className={`max-sm:fixed max-sm:h-screen max-sm:w-full max-sm:top-16 max-sm:border-t border-borderColor left-0 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 max-sm:p-4 transform transition-all duration-300 z-50 ${location.pathname === "/" ? "bg-light" : "bg-white"} ${open ? "max-sm:translate-x-0" : "max-sm:-translate-x-full"}`}>

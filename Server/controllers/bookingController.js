@@ -329,3 +329,26 @@ export const changeBookingStatus = async (req, res) => {
 
 
 
+export const getConfirmedBookingsForCar = async (req, res) => {
+  try {
+    const { carId } = req.params
+
+    const bookings = await Booking.find({
+      car: carId,
+      status: 'confirmed'
+    })
+      .select('pickupDateTime returnDateTime')
+      .sort({ pickupDateTime: 1 })
+
+    res.json({
+      success: true,
+      bookings
+    })
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message
+    })
+  }
+}

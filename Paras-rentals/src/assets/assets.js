@@ -43,6 +43,8 @@ import car_image4 from "./car_image4.png"
 import ketan from "./Ketan.jpeg"
 import arpit from "./Arpit.jpeg"
 import yuvraj from "./Yuvraj.jpeg"
+import logoNew from "./logoNew.png"
+import logoSmall from "./logoSmall.png"
 
 export const cityList = ['Jabalpur']
 
@@ -91,7 +93,9 @@ export const assets = {
     car_image4,
     ketan,
     arpit,
-    yuvraj
+    yuvraj,
+    logoNew,
+    logoSmall
 }
 
 export const menuLinks = [
