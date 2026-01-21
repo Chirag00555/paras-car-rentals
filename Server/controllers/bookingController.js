@@ -1,4 +1,14 @@
     import Booking from "../models/Booking.js"
+    import sendEmail from "../utils/sendEmail.js";
+import {
+  ownerBookingRequestTemplate,
+  customerBookingRequestTemplate,
+  bookingConfirmedTemplate,
+  bookingDeclinedTemplate,
+  bookingCancelledTemplate,
+  bookingCompletedTemplate
+} from "../utils/emailTemplates.js";
+
 
     // fucntion to check availaibility of car for a given data
 
@@ -14,23 +24,37 @@
     //     return bookings.length === 0
     // }
 
-const checkAvailability = async (car, pickupDateTime, returnDateTime) => {
+const checkAvailability = async (
+  car,
+  pickupDateTime,
+  returnDateTime,
+  excludeBookingId = null
+) => {
   const ONE_HOUR = 60 * 60 * 1000
 
   const pickup = new Date(pickupDateTime)
   const drop = new Date(returnDateTime)
 
-  const bookings = await Booking.find({
+  const query = {
     car,
-    status: 'confirmed',
+    status: 'confirmed', // ✅ only confirmed blocks
     pickupDateTime: { $lt: drop },
     returnDateTime: {
       $gt: new Date(pickup.getTime() - ONE_HOUR)
     }
-  })
+  }
 
-  return bookings.length === 0
+  // ✅ THIS IS THE MISSING PART
+  if (excludeBookingId) {
+    query._id = { $ne: excludeBookingId }
+  }
+
+  const booking = await Booking.findOne(query)
+
+  return !booking
 }
+
+
 
 
 
@@ -206,7 +230,7 @@ export const createBooking = async (req, res) => {
     if (pickupService) price += 400
     if (dropService) price += 400
 
-    await Booking.create({
+    const booking = await Booking.create({
       car: carId,
       user: _id,
       pickupDateTime,
@@ -219,6 +243,35 @@ export const createBooking = async (req, res) => {
       price,
       status: 'pending'
     })
+
+        // 📧 EMAIL NOTIFICATIONS (NON-BREAKING ADDITION)
+    try {
+      const bookingData = {
+        customerName: req.user.name,
+        phone,
+        carName: carData.name,
+        pickupDateTime,
+        returnDateTime
+      };
+
+      // Email to OWNER
+      await sendEmail({
+        email: process.env.EMAIL_USER,
+        subject: "New Booking Request – Action Required",
+        message: ownerBookingRequestTemplate(bookingData)
+      });
+
+      // Email to CUSTOMER
+      await sendEmail({
+        email: req.user.email,
+        subject: "Booking Request Received – Paras Rentals",
+        message: customerBookingRequestTemplate(bookingData)
+      });
+
+    } catch (mailError) {
+      console.error("Email error:", mailError.message);
+    }
+
 
     res.json({ success: true, message: "Booking Created" })
 
@@ -293,45 +346,170 @@ export const createBooking = async (req, res) => {
     //     }
     // }
 
+// export const changeBookingStatus = async (req, res) => {
+//   console.log("STATUS RECEIVED FROM FRONTEND 👉", status);
+
+//   try {
+//     const { bookingId, status } = req.body
+
+//     const booking = await Booking.findById(bookingId).populate("user", "name email").populate("car", "name");
+//     if (!booking) {
+//       return res.json({ success: false, message: 'Booking not found' })
+//     }
+
+//     if (status === 'confirmed') {
+//       const isAvailable = await checkAvailability(
+//         booking.car,
+//         booking.pickupDateTime,
+//         booking.returnDateTime
+//       )
+
+//       if (!isAvailable) {
+//         return res.json({
+//           success: false,
+//           message: 'Car not available for this time slot'
+//         })
+//       }
+//     }
+
+//     booking.status = status
+//     await booking.save()
+
+//         // 📧 EMAIL NOTIFICATION (NON-BREAKING ADDITION)
+//     try {
+//       const bookingData = {
+//         customerName: booking.user.name,
+//         carName: booking.car.name,
+//         pickupDateTime: booking.pickupDateTime,
+//         returnDateTime: booking.returnDateTime
+//       };
+
+//       if (status === "confirmed") {
+//         await sendEmail({
+//           email: booking.user.email,
+//           subject: "Booking Confirmed – Paras Rentals",
+//           message: bookingConfirmedTemplate(bookingData)
+//         });
+//       }
+
+//       if (status === "declined") {
+//         await sendEmail({
+//           email: booking.user.email,
+//           subject: "Booking Request Declined – Paras Rentals",
+//           message: bookingDeclinedTemplate(bookingData)
+//         });
+//       }
+
+//     } catch (mailError) {
+//       console.error("Booking status email error:", mailError.message);
+//     }
+
+
+//     res.json({ success: true, message: 'Booking status updated' })
+
+//   } catch (error) {
+//     res.json({ success: false, message: error.message })
+//   }
+// }
+
 export const changeBookingStatus = async (req, res) => {
   try {
-    const { bookingId, status } = req.body
+    const { bookingId, status } = req.body;
+
+    const normalizedStatus = status.toLowerCase();
 
     const booking = await Booking.findById(bookingId)
+      .populate("user", "name email")
+      .populate("car", "name");
+
     if (!booking) {
-      return res.json({ success: false, message: 'Booking not found' })
+      return res.json({ success: false, message: 'Booking not found' });
     }
 
-    if (status === 'confirmed') {
+    // Availability check only when confirming
+    if (normalizedStatus === 'confirmed') {
       const isAvailable = await checkAvailability(
-        booking.car,
-        booking.pickupDateTime,
-        booking.returnDateTime
-      )
+      booking.car._id,
+      booking.pickupDateTime,
+      booking.returnDateTime,
+      booking._id
+    )
+
 
       if (!isAvailable) {
         return res.json({
           success: false,
           message: 'Car not available for this time slot'
-        })
+        });
       }
     }
 
-    booking.status = status
-    await booking.save()
+    // ✅ SAVE STATUS AS-IS
+    booking.status = normalizedStatus;
+    await booking.save();
 
-    res.json({ success: true, message: 'Booking status updated' })
+    // 📧 EMAIL NOTIFICATIONS (SAFE, NON-BLOCKING)
+    try {
+      const bookingData = {
+        customerName: booking.user.name,
+        carName: booking.car.name,
+        pickupDateTime: booking.pickupDateTime,
+        returnDateTime: booking.returnDateTime
+      };
+
+      if (normalizedStatus === "confirmed") {
+        await sendEmail({
+          email: booking.user.email,
+          subject: "Booking Confirmed – Paras Rentals",
+          message: bookingConfirmedTemplate(bookingData)
+        });
+      }
+
+      if (normalizedStatus === "declined") {
+        await sendEmail({
+          email: booking.user.email,
+          subject: "Booking Request Declined – Paras Rentals",
+          message: bookingDeclinedTemplate(bookingData)
+        });
+      }
+
+      if (normalizedStatus === "cancelled") {
+        await sendEmail({
+          email: booking.user.email,
+          subject: "Booking Cancelled – Paras Rentals",
+          message: bookingCancelledTemplate(bookingData)
+        });
+      }
+
+      if (normalizedStatus === "completed") {
+        await sendEmail({
+          email: booking.user.email,
+          subject: "Booking Completed – Paras Rentals",
+          message: bookingCompletedTemplate(bookingData)
+        });
+      }
+
+    } catch (mailError) {
+      console.error("Booking status email error:", mailError);
+    }
+
+    res.json({ success: true, message: 'Booking status updated' });
 
   } catch (error) {
-    res.json({ success: false, message: error.message })
+    res.json({ success: false, message: error.message });
   }
-}
+};
+
+
+
 
 
 
 export const getConfirmedBookingsForCar = async (req, res) => {
   try {
     const { carId } = req.params
+    const ONE_HOUR = 60 * 60 * 1000
+    const now = new Date()
 
     const bookings = await Booking.find({
       car: carId,
@@ -340,15 +518,17 @@ export const getConfirmedBookingsForCar = async (req, res) => {
       .select('pickupDateTime returnDateTime')
       .sort({ pickupDateTime: 1 })
 
+    // ✅ Filter only ACTIVE confirmed bookings
+    const activeBookings = bookings.filter(b =>
+      new Date(b.returnDateTime).getTime() + ONE_HOUR > now.getTime()
+    )
+
     res.json({
       success: true,
-      bookings
+      bookings: activeBookings
     })
-
   } catch (error) {
-    res.json({
-      success: false,
-      message: error.message
-    })
+    res.json({ success: false, message: error.message })
   }
 }
+

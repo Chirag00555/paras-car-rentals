@@ -39,6 +39,23 @@ const ManageBookings = () => {
     fetchOwnerBookings()
   }, [])
 
+
+  const getStatusClass = (status) => {
+  switch (status) {
+    case 'confirmed':
+      return 'bg-green-100 text-green-600 border-green-300';
+    case 'completed':
+      return 'bg-green-200 text-green-700 border-green-400';
+    case 'declined':
+      return 'bg-red-100 text-red-600 border-red-300';
+    case 'cancelled':
+      return 'bg-red-200 text-red-700 border-red-400';
+    default:
+      return 'bg-gray-100 text-gray-600 border-gray-300';
+  }
+};
+
+
   return (
     <div className='px-4 pt-10 md:px-10 w-full'>
       <Title
@@ -55,6 +72,8 @@ const ManageBookings = () => {
               <th className='p-3 font-medium max-md:hidden'>Contact</th>
               <th className='p-3 font-medium'>Total</th>
               <th className='p-3 font-medium'>Actions</th>
+              
+
             </tr>
           </thead>
 
@@ -111,30 +130,27 @@ const ManageBookings = () => {
                     {currency}{booking.price}
                   </td>
 
-                  <td className="p-3">
-                    {booking.status === 'pending' ? (
-                      <select
-                        onChange={e =>
-                          changeBookingStatus(booking._id, e.target.value)
-                        }
-                        className="px-2 py-1.5 text-gray-500 border border-borderColor rounded-md outline-none"
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="confirmed">Confirmed</option>
-                      </select>
-                    ) : (
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          booking.status === 'confirmed'
-                            ? 'bg-green-100 text-green-500'
-                            : 'bg-red-100 text-red-500'
-                        }`}
-                      >
-                        {booking.status}
-                      </span>
-                    )}
-                  </td>
+                 <td className="p-3">
+  <select
+    value={booking.status}
+    onChange={e =>
+      changeBookingStatus(booking._id, e.target.value)
+    }
+    className={`px-2 py-1.5 rounded-md outline-none border ${getStatusClass(
+      booking.status
+    )}`}
+  >
+    <option value="pending">Pending</option>
+    <option value="confirmed">Confirmed</option>
+    <option value="declined">Declined</option>
+    <option value="completed">Completed</option>
+    <option value="cancelled">Cancelled</option>
+  </select>
+</td>
+
+
+
+
                 </tr>
               )
             })}

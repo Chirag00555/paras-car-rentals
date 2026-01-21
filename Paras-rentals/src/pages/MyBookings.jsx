@@ -27,6 +27,40 @@ const MyBookings = () => {
     user && fetchMyBookings()
   }, [user])
 
+  // ✅ STATUS LABELS (USER FRIENDLY)
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'Pending Approval'
+      case 'confirmed':
+        return 'Confirmed'
+      case 'completed':
+        return 'Ride Completed'
+      case 'cancelled':
+        return 'Booking Cancelled'
+      case 'declined':
+        return 'Booking Declined'
+      default:
+        return status
+    }
+  }
+
+  // ✅ STATUS COLORS (CONSISTENT WITH OWNER PANEL)
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-400/15 text-yellow-600'
+      case 'confirmed':
+      case 'completed':
+        return 'bg-green-400/15 text-green-600'
+      case 'declined':
+      case 'cancelled':
+        return 'bg-red-400/15 text-red-600'
+      default:
+        return 'bg-gray-400/15 text-gray-600'
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -43,7 +77,6 @@ const MyBookings = () => {
       <div>
         {bookings.map((booking, index) => {
 
-          // ✅ CORRECT DATE + TIME HANDLING
           const pickup = new Date(booking.pickupDateTime)
           const drop = new Date(booking.returnDateTime)
 
@@ -93,17 +126,11 @@ const MyBookings = () => {
                   </p>
 
                   <p
-                    className={`px-3 py-1 text-xs rounded capitalize
-                      ${
-                        booking.status === 'confirmed'
-                          ? 'bg-green-400/15 text-green-600'
-                          : booking.status === 'pending'
-                          ? 'bg-yellow-400/15 text-yellow-600'
-                          : 'bg-red-400/15 text-red-600'
-                      }
-                    `}
+                    className={`px-3 py-1 text-xs rounded capitalize ${getStatusClass(
+                      booking.status
+                    )}`}
                   >
-                    {booking.status}
+                    {getStatusLabel(booking.status)}
                   </p>
                 </div>
 
