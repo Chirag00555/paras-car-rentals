@@ -25,6 +25,11 @@ app.use('/api/user', userRouter)
 app.use('/api/owner', ownerRouter)
 app.use('/api/bookings', bookingRouter)
 
+
+
+
+
+
 // app.use((err, req, res, next) => {
 //   if (err instanceof multer.MulterError) {
 //     return res.status(400).json({

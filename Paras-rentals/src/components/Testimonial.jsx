@@ -7,23 +7,23 @@ import { motion } from 'motion/react';
 const Testimonial = () => {
 
     const testimonials = [
-        {   name: "Chirag Jain", 
-            location: "Adhartal, Jabalpur", 
-            image: assets.testimonial_image_1, 
-            testimonial: "Exceptional service and attention to detail. Everything was handled professionally and efficiently from start to finish. Highly recommended!" },
-        {   name: "Aman Chaudhary", 
-            location: "Baldeobagh, Jabalpur", 
-            image: assets.testimonial_image_2, 
-            testimonial: "Exceptional service and attention to detail. Everything was handled professionally and efficiently from start to finish. Highly recommended!" },
+        {   name: "Ketan Mehra", 
+            location: "Madan Mahal, Jabalpur", 
+            image: assets.ketan, 
+            testimonial: "Smooth and hassle-free experience. The car was in excellent condition and the entire booking process was quick and reliable. Would definitely use this service again!" },
+        {   name: "Yuvraj Singh", 
+            location: "Belkheda, Patan", 
+            image: assets.yuvraj, 
+            testimonial: "Very professional and well-managed service. From pickup to return, everything was seamless and transparent. Truly impressed with the quality." },
         {   name: "Arpit Patel", 
             location: "Jasuja City, Jabalpur", 
-            image: assets.testimonial_image_3, 
-            testimonial: "Exceptional service and attention to detail. Everything was handled professionally and efficiently from start to finish. Highly recommended!" },
+            image: assets.arpit, 
+            testimonial: "Great attention to customer needs. The process was simple, pricing was clear, and the support team was extremely helpful throughout." },
     ];
 
   return (
     
-    <div className="py-28 px-6 md:px-16 lg:px-24 xl:px-44">
+    <div className="py-2 px-6 md:px-16 lg:px-24 xl:px-44">
             
             <Title title="What our Customers Say" subTitle="Discover why discerning travelers choose StayVenture for their luxury accomodations around the world."/>
 

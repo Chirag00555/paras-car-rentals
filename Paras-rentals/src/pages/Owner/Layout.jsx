@@ -13,15 +13,21 @@ const Layout = () => {
       navigate('/')
     }
   },[isOwner])
-  return (
-    <div className='flex flex-col'>
-      <NavbarOwner/>
-      <div className='flex'>
-        <Sidebar/>
-        <Outlet/>
+ return (
+  <div className="min-h-screen flex flex-col">
+    <NavbarOwner />
+
+    <div className="flex flex-1">
+      <Sidebar />
+
+      {/* Main owner page content */}
+      <div className="flex-1">
+        <Outlet />
       </div>
     </div>
-  )
+  </div>
+)
+
 }
 
 export default Layout

@@ -3,13 +3,15 @@ import { assets } from '../assets/assets'
 import { motion } from 'motion/react'
 
 const Footer = () => {
+
+    const insta = "https://www.instagram.com/jabalpur_selfdrive_cars?igsh=MXQxMjY4Nm1pODM0eA=="
   return (
     
        <motion.div 
        initial={{ opacity: 0, y: 30 }}
        whileInView={{ opacity: 1, y: 0 }}
        transition={{ duration: 0.6 }}  
-       className='px-6 md:px-16 lg:px-24 xl:px-32 mt-60 text-sm text-gray-500'>
+       className='px-6 md:px-16 lg:px-24 xl:px-32 mt-30 text-sm text-gray-500'>
             <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -33,9 +35,9 @@ const Footer = () => {
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                     className='flex items-center gap-3 mt-6'>
-                        <a href="#"> <img src={assets.facebook_logo} alt="facebook" className='w-5 h-5'/> </a>
-                        <a href="#"> <img src={assets.instagram_logo} alt="instagram" className='w-5 h-5'/> </a>
-                        <a href="#"> <img src={assets.twitter_logo} alt="twitter" className='w-5 h-5'/> </a>
+                        {/* <a href="#"> <img src={assets.facebook_logo} alt="facebook" className='w-5 h-5'/> </a> */}
+                        <a href={insta}> <img src={assets.instagram_logo} alt="instagram" className='w-5 h-5'/> </a>
+                        {/* <a href=""> <img src={assets.twitter_logo} alt="twitter" className='w-5 h-5'/> </a> */}
                         <a href="#"> <img src={assets.gmail_logo} alt="Gmail" className='w-5 h-5'/> </a>
                         
                         
@@ -49,12 +51,12 @@ const Footer = () => {
                 className='flex flex-wrap justify-between w-1/2 gap-8'>
 
 
-                    <div>
+                <div>
                     <h2 className='text-base font-medium text-gray-800 uppercase'>Quick Links</h2>
                     <ul className='mt-3 flex flex-col gap-1.5'>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Browse Cars</a></li>
-                        <li><a href="#">List your Car</a></li>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/cars">Browse Cars</a></li>
+                        <li><a href="/inquiry">Query</a></li>
                         <li><a href="#">About us</a></li>
                     </ul>
                 </div>
@@ -66,17 +68,17 @@ const Footer = () => {
                         <li><a href="#">Help Center</a></li>
                         <li><a href="#">Terms of Service</a></li>
                         <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Insurance</a></li>
+                        
                     </ul>
                 </div>
 
                 <div>
                     <h2 className='text-base font-medium text-gray-800 uppercase'>Contact</h2>
                     <ul className='mt-3 flex flex-col gap-1.5'>
-                        <li>Dummy Address</li>
-                        <li>Jabalpur</li>
-                        <li>+91 xxxxxxxxxx</li>
-                        <li>Dummy@mail.com</li>
+                        <li>Sainik Colony, Madan Mahal</li>
+                        <li>Jabalpur, 482002</li>
+                        <li>+91 8871930783</li>
+                        <li>parasrentals69@mail.com</li>
                     </ul>
                 </div>
 

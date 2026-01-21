@@ -31,7 +31,7 @@ const Hero = () => {
         initial={{y:50, opacity:0}}
         animate={{y:0, opacity:1}}
         transition={{duration: 0.8, delay:0.2}}
-        className='text-4xl md:text-5xl font-semibold'>Luxury cars on Rent</motion.h1>
+        className='text-4xl md:text-5xl font-semibold'>Paras Self Drive Car Rental</motion.h1>
 
         <motion.form
         initial={{scale:0.95, opacity:0, y:50}}

@@ -27,10 +27,9 @@ const inquirySchema = new mongoose.Schema(
       trim: true
     },
 
-    status: {
-      type: String,
-      enum: ["pending", "replied"],
-      default: "pending"
+    resolved: {
+      type: Boolean,
+      default: false
     }
   },
   {

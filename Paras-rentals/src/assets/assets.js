@@ -40,6 +40,9 @@ import car_image1 from "./car_image1.png"
 import car_image2 from "./car_image2.png"
 import car_image3 from "./car_image3.png"
 import car_image4 from "./car_image4.png"
+import ketan from "./Ketan.jpeg"
+import arpit from "./Arpit.jpeg"
+import yuvraj from "./Yuvraj.jpeg"
 
 export const cityList = ['Jabalpur']
 
@@ -85,7 +88,10 @@ export const assets = {
     user_profile,
     car_image2,
     car_image3,
-    car_image4
+    car_image4,
+    ketan,
+    arpit,
+    yuvraj
 }
 
 export const menuLinks = [
@@ -93,6 +99,7 @@ export const menuLinks = [
     { name: "Cars", path: "/cars" },
     { name: "My Bookings", path: "/my-bookings" },
     { name: "Query", path: "/inquiry"},
+    { name: "Coupons", path: "/coupons"},
 ]
 
 export const ownerMenuLinks = [
@@ -100,6 +107,7 @@ export const ownerMenuLinks = [
     { name: "Add car", path: "/owner/add-car", icon: addIcon, coloredIcon: addIconColored },
     { name: "Manage Cars", path: "/owner/manage-cars", icon: carIcon, coloredIcon: carIconColored },
     { name: "Manage Bookings", path: "/owner/manage-bookings", icon: listIcon, coloredIcon: listIconColored },
+    { name: "Manage Queries", path: "/owner/manage-queries", icon: listIcon, coloredIcon: listIconColored },
 ]
 
 export const dummyUserData = {

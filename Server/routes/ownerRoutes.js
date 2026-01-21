@@ -9,6 +9,15 @@ import {
   getOwnerCars,
   toggleCarAvailaibility,
 } from "../controllers/ownerController.js";
+
+import {
+  getAllQueries,
+  toggleQueryResolved
+} from "../controllers/ownerInquiryController.js";
+
+
+
+
 import upload from "../middleware/multer.js";
 
 const ownerRouter = express.Router();
@@ -41,5 +50,8 @@ ownerRouter.get("/cars", protect, isOwner, getOwnerCars);
 ownerRouter.post("/toggle-car", protect, isOwner, toggleCarAvailaibility);
 ownerRouter.post("/delete-car", protect, isOwner, deleteCar);
 ownerRouter.get("/dashboard", protect, isOwner, getDashboardData);
+
+ownerRouter.get("/queries", protect, getAllQueries);
+ownerRouter.patch("/queries/:id", protect, toggleQueryResolved);
 
 export default ownerRouter;

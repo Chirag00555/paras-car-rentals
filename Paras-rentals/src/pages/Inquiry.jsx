@@ -84,7 +84,7 @@ const Inquiry = () => {
             <p className="text-xs bg-indigo-200 text-indigo-600 font-medium px-3 py-1 rounded-full">Contact Us</p> 
             <h1 className="text-4xl font-bold py-4 text-center">Let’s Get In Touch.</h1>
             <p className="max-md:text-sm text-gray-500 pb-10 text-center">
-                Or just reach out manually to us at <a href="#" className="text-indigo-600 hover:underline">parasrentels@gmail.com</a>
+                Or just reach out manually to us at <a href="#" className="text-indigo-600 hover:underline">parasrentels69@gmail.com</a>
             </p>
             
             <div className="max-w-96 w-full px-4">
