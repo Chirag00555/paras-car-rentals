@@ -21,6 +21,8 @@ export const AppProvider = ({children}) => {
     const [showLogin, setShowLogin] = useState(false)   
     const [pickupDate, setPickupDate] = useState('')   
     const [returnDate, setReturnDate] = useState('')  
+    const [phone, setPhone] = useState("")
+
     
     const [cars, setCars] = useState([])
 
@@ -80,7 +82,7 @@ export const AppProvider = ({children}) => {
     },[token])
 
     const value = {
-        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail,
+        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone
     }
 
     return (

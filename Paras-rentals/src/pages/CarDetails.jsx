@@ -9,7 +9,7 @@ import { motion } from 'motion/react'
 const CarDetails = () => {
 
     const {id} = useParams()
-    const {cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate} = useAppContext()
+    const {cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, phone, setPhone} = useAppContext()
     const navigate = useNavigate()
     const [car, setCar] = useState(null)
     const currency = import.meta.env.VITE_CURRENCY
@@ -20,7 +20,8 @@ const CarDetails = () => {
             const {data} = await axios.post('/api/bookings/create', {
                 car: id,
                 pickupDate, 
-                returnDate
+                returnDate,
+                phone
             })
 
             if(data.success){
@@ -38,6 +39,8 @@ const CarDetails = () => {
     useEffect(()=>{
         setCar(cars.find(car => car._id === id))
     },[cars, id])
+
+
   return car ? (
     <div className='px-6 md:px-16 lg:px-24 xl:px-32 mt-16'>
       <button onClick={()=> navigate(-1)} className='flex items-center gap-2 mb-6 text-gray-500 cursor-pointer'>
@@ -127,6 +130,12 @@ const CarDetails = () => {
                 <label htmlFor="return-date">Return date</label>
                 <input value={returnDate} onChange={(e)=>setReturnDate(e.target.value)}
                 type="date" className='border border-borderColor px-3 py-2 rounded-lg' required id='return-date' min={pickupDate}/>
+            </div>
+
+            <div className='flex flex-col gap-2'>
+                <label htmlFor="phone">Contact number</label>
+                <input value={phone} onChange={(e)=>setPhone(e.target.value)}
+                type="tel" className='border border-borderColor px-3 py-2 rounded-lg' placeholder='Enter Contact number' required id='phone' />
             </div>
 
             <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>
