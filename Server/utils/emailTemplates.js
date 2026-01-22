@@ -108,3 +108,34 @@ Regards,
 Paras Rentals
 `;
 
+export const registerOtpTemplate = (otp) => `
+Hello,
+
+Welcome to Paras Rentals 🚗
+
+Your email verification OTP is:
+🔐 ${otp}
+
+This OTP is valid for 10 minutes.
+
+If you didn’t request this, please ignore this email.
+
+Regards,
+Paras Rentals
+`;
+
+export const forgotPasswordOtpTemplate = (otp) => `
+Hello,
+
+You requested a password reset for your Paras Rentals account.
+
+🔐 Your password reset OTP is:
+${otp}
+
+This OTP is valid for 10 minutes.
+
+If you did not request this, please ignore this email.
+
+Regards,
+Paras Rentals
+`;

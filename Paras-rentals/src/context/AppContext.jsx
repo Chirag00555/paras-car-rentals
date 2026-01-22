@@ -14,7 +14,7 @@ export const AppProvider = ({children}) => {
     const currency = import.meta.env.VITE_CURRENCY
 
     const [showOtp, setShowOtp] = useState(false);
-    const [otpEmail, setOtpEmail] = useState("");
+    // const [otpEmail, setOtpEmail] = useState("");
     const [token, setToken] = useState(null)   
     const [user, setUser] = useState(null)   
     const [isOwner, setIsOwner] = useState(false)   
@@ -30,6 +30,10 @@ export const AppProvider = ({children}) => {
     const [returnTime, setReturnTime] = useState("")
     const [pricePer12Hours, setPricePer12Hours] = useState("")
     const [isAuthReady, setIsAuthReady] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [showResetPassword, setShowResetPassword] = useState(false);
+    const [otpEmail, setOtpEmail] = useState("");
+
 
 
 
@@ -119,7 +123,7 @@ useEffect(() => {
 
 
     const value = {
-        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours, isAuthReady, setIsAuthReady
+        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours, isAuthReady, setIsAuthReady, showResetPassword, setShowResetPassword, showForgotPassword, setShowForgotPassword
     }
 
     return (

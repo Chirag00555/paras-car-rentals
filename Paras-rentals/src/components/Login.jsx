@@ -6,7 +6,7 @@ const Login = () => {
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const {setShowLogin, axios, setToken, navigate, setOtpEmail, setShowOtp} = useAppContext()
+    const {setShowLogin, axios, setToken, navigate, setOtpEmail, setShowOtp, setShowForgotPassword} = useAppContext()
 
     const [state, setState] = React.useState("login");
     const [name, setName] = React.useState("");
@@ -83,15 +83,17 @@ const Login = () => {
             {/* forget password */}
 
             {state === "login" && (
-                <p
+                    <p
                     onClick={() => {
-                    setShowLogin(false);
-                    navigate("/forgot-password");
+                        setShowLogin(false);
+                        setShowForgotPassword(true);
                     }}
                     className="text-sm text-primary cursor-pointer text-right"
-                >
+                    >
                     Forgot password?
-                </p>
+                    </p>
+
+
                 )}
 
 

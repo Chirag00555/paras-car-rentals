@@ -4,6 +4,13 @@ import jwt from 'jsonwebtoken'
 import Car from "../models/Car.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
+import generateOtp from "../utils/generateOtp.js";
+
+import {
+  registerOtpTemplate,
+  forgotPasswordOtpTemplate
+} from "../utils/emailTemplates.js";
+
 
 
 // Generate JWT token
@@ -30,23 +37,21 @@ export const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // ✅ STRING OTP (NO PROMISE)
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOtp();
 
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      emailOtp: crypto.createHash("sha256").update(otp).digest("hex"),
-      emailOtpExpire: Date.now() + 10 * 60 * 1000,
+      emailVerifyOtp: crypto.createHash("sha256").update(otp).digest("hex"),
+      emailVerifyOtpExpire: Date.now() + 10 * 60 * 1000,
       isVerified: false,
     });
 
     await sendEmail({
       email,
       subject: "Verify your email - Paras Rentals",
-      message: `Your OTP is ${otp}`,
+      message: registerOtpTemplate(otp),
     });
 
     res.json({ success: true, message: "OTP sent to email" });
@@ -56,6 +61,7 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 // Login user
 
 export const loginUser = async (req, res)=>{
@@ -113,41 +119,41 @@ export const getCars = async (req, res)=>{
 
 
 export const verifyEmailOtp = async (req, res) => {
-    try {
-        const { email, otp } = req.body;
+  try {
+    const { email, otp } = req.body;
 
-        if (!email || !otp) {
-            return res.json({ success: false, message: "Email and OTP required" });
-        }
-
-        const hashedOtp = crypto
-            .createHash("sha256")
-            .update(otp)
-            .digest("hex");
-
-        const user = await User.findOne({
-            email,
-            emailOtp: hashedOtp,
-            emailOtpExpire: { $gt: Date.now() },
-        });
-
-        if (!user) {
-            return res.json({ success: false, message: "Invalid or expired OTP" });
-        }
-
-        user.isVerified = true;
-        user.emailOtp = undefined;
-        user.emailOtpExpire = undefined;
-
-        await user.save();
-
-        return res.json({ success: true, message: "Email verified successfully" });
-
-    } catch (error) {
-        console.log(error.message);
-        return res.json({ success: false, message: error.message });
+    if (!email || !otp) {
+      return res.json({ success: false, message: "Email and OTP required" });
     }
+
+    const hashedOtp = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+
+    const user = await User.findOne({
+      email,
+      emailVerifyOtp: hashedOtp,
+      emailVerifyOtpExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.json({ success: false, message: "Invalid or expired OTP" });
+    }
+
+    user.isVerified = true;
+    user.emailVerifyOtp = undefined;
+    user.emailVerifyOtpExpire = undefined;
+
+    await user.save();
+
+    res.json({ success: true, message: "Email verified successfully" });
+
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 };
+
 
 
 //Forget Password
@@ -166,23 +172,28 @@ export const forgotPassword = async (req, res) => {
     }
 
     const otp = generateOtp();
-    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
-    user.emailOtp = hashedOtp;
-    user.emailOtpExpire = Date.now() + 10 * 60 * 1000;
+    user.passwordResetOtp = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+
+    user.passwordResetOtpExpire = Date.now() + 10 * 60 * 1000;
     await user.save();
 
     await sendEmail({
-      to: email,
-      subject: "Password Reset OTP",
-      html: `<h2>Your OTP is: ${otp}</h2>`,
+      email,
+      subject: "Password Reset OTP - Paras Rentals",
+      message: forgotPasswordOtpTemplate(otp),
     });
 
     res.json({ success: true, message: "OTP sent to email" });
+
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 //reset password
 
@@ -194,12 +205,15 @@ export const resetPassword = async (req, res) => {
       return res.json({ success: false, message: "Invalid input" });
     }
 
-    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+    const hashedOtp = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
 
     const user = await User.findOne({
       email,
-      emailOtp: hashedOtp,
-      emailOtpExpire: { $gt: Date.now() },
+      passwordResetOtp: hashedOtp,
+      passwordResetOtpExpire: { $gt: Date.now() },
     });
 
     if (!user) {
@@ -207,16 +221,18 @@ export const resetPassword = async (req, res) => {
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
-    user.emailOtp = undefined;
-    user.emailOtpExpire = undefined;
+    user.passwordResetOtp = undefined;
+    user.passwordResetOtpExpire = undefined;
 
     await user.save();
 
     res.json({ success: true, message: "Password reset successful" });
+
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 
 //resend otp
@@ -238,27 +254,26 @@ export const resendOtp = async (req, res) => {
       return res.json({ success: false, message: "Already verified" });
     }
 
-    // ✅ STRING OTP (NO PROMISE)
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOtp();
 
-    user.emailOtp = crypto
+    user.emailVerifyOtp = crypto
       .createHash("sha256")
       .update(otp)
       .digest("hex");
 
-    user.emailOtpExpire = Date.now() + 10 * 60 * 1000;
+    user.emailVerifyOtpExpire = Date.now() + 10 * 60 * 1000;
     await user.save();
 
     await sendEmail({
       email,
-      subject: "Your OTP - Paras Rentals",
-      message: `Your OTP is ${otp}`,
+      subject: "Verify your email - Paras Rentals",
+      message: registerOtpTemplate(otp),
     });
 
     res.json({ success: true, message: "OTP resent successfully" });
 
   } catch (error) {
-    console.error("RESEND OTP ERROR:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+

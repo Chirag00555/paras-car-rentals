@@ -13,8 +13,8 @@ import ManageCars from './pages/Owner/ManageCars'
 import ManageBookings from './pages/Owner/ManageBookings'
 import Login from './components/Login'
 import VerifyEmail from './pages/VerifyEmail'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
+import ForgotPassword from './components/ForgotPassword'
+import ResetPassword from './components/ResetPassword'
 import VerifyOtp from "./components/VerifyOtp";
 import Inquiry from './pages/Inquiry'
 import Coupons from './pages/Coupons'
@@ -26,13 +26,16 @@ import { useAppContext } from './context/AppContext'
 
 const App = () => {
 
-  const {showLogin, showOtp, otpEmail} = useAppContext()
+  const {showLogin, showOtp, showForgotPassword, showResetPassword, otpEmail} = useAppContext()
   const isOwnerPath = useLocation().pathname.startsWith('/owner')
   return (
     <>
     <Toaster />
-      {showLogin && <Login/>}
+      {showLogin && <Login />}
+      {showForgotPassword && <ForgotPassword />}
+      {showResetPassword && <ResetPassword />}
       {showOtp && <VerifyOtp email={otpEmail} />}
+      
       {!isOwnerPath && <Navbar />}
 
       <Routes>
@@ -42,8 +45,7 @@ const App = () => {
         <Route path='/my-bookings' element={<MyBookings/>}/>
         <Route path='/coupons' element={<Coupons/>}/>
         <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+
         <Route path="/inquiry" element={<Inquiry />} />
         <Route path='/owner' element={<Layout />}>
         <Route index element={<Dashboard/>}/>
