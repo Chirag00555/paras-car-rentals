@@ -3,7 +3,7 @@ import Car from "../models/Car.js";
 import Booking from "../models/Booking.js";
 import User from "../models/User.js";
 // import uploadToImageKit from "../utils/uploadToImageKit.js";
-import fs from "fs";
+// import fs from "fs";
 
 
 
@@ -24,60 +24,63 @@ export const changeRoleToOwner = async (req, res)=>{
 
 
 
-export const addCar = async (req, res)=>{
+export const addCar = async (req, res) => {
+  try {
+    // auth check
+    const { _id } = req.user;
 
-     if (!req.body || !req.body.carData) {
-            console.log("REQ BODY:", req.body);
-            return res.json({
-                success: false,
-                message: "carData missing from request body"
-            });
-        }
-
-
-    try {
-        const {_id} = req.user;
-
-        if (!req.body.carData) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Missing carData in request body" 
-            });
-        }
-
-        
-        let car = JSON.parse(req.body.carData);
-        const imageFile = req.file;
-
-
-        //upload image to image kit
-        const fileBuffer = fs.readFileSync(imageFile.path)
-        const response = await imagekit.upload({
-            file: fileBuffer,
-            fileName: imageFile.originalname,
-            folder: '/cars'
-        })
-
-        var optimizedImageUrl = imagekit.url({
-            path: response.filePath,
-            transformation: [
-                {width: '1280'},
-                {quality: 'auto'},
-                {format: 'webp'}
-
-            ]
-        })
-
-        const image = optimizedImageUrl;
-        await Car.create({...car, owner: _id, image})
-
-        res.json({success: true, message: "Car Added"})
-
-    } catch (error) {
-        console.log(error.message);
-        res.json({success: false, message: error.message})
+    // validate body
+    if (!req.body?.carData) {
+      return res.status(400).json({
+        success: false,
+        message: "carData missing from request body",
+      });
     }
-}
+
+    // validate file
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Car image is required",
+      });
+    }
+
+    const car = JSON.parse(req.body.carData);
+    const imageFile = req.file;
+
+    // ✅ USE BUFFER (serverless-safe)
+    const response = await imagekit.upload({
+      file: imageFile.buffer,          // <<< KEY CHANGE
+      fileName: imageFile.originalname,
+      folder: "/cars",
+    });
+
+    const optimizedImageUrl = imagekit.url({
+      path: response.filePath,
+      transformation: [
+        { width: "1280" },
+        { quality: "auto" },
+        { format: "webp" },
+      ],
+    });
+
+    await Car.create({
+      ...car,
+      owner: _id,
+      image: optimizedImageUrl,
+    });
+
+    res.json({ success: true, message: "Car Added" });
+
+  } catch (error) {
+    console.error("ADD CAR ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 
 
@@ -183,41 +186,47 @@ export const getDashboardData = async (req, res) => {
 
 //API to update user image
 
-export const updateUserImage = async (req, res)=>{
-    try {
-        const {_id} = req.user;
+export const updateUserImage = async (req, res) => {
+  try {
+    const { _id } = req.user;
 
-        const imageFile = req.file;
-
-
-        //upload image to image kit
-        const fileBuffer = fs.readFileSync(imageFile.path)
-        const response = await imagekit.upload({
-            file: fileBuffer,
-            fileName: imageFile.originalname,
-            folder: '/users'
-        })
-
-        var optimizedImageUrl = imagekit.url({
-            path: response.filePath,
-            transformation: [
-                {width: '400'},
-                {quality: 'auto'},
-                {format: 'webp'}
-
-            ]
-        });
-
-        const image = optimizedImageUrl;
-
-        await User.findByIdAndUpdate(_id, {image});
-        res.json({success: true, message: "Image Updated"})
-        
-    } catch (error) {
-        console.log(error.message);
-        res.json({success: false, message: error.message})
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Image file is required",
+      });
     }
-}
+
+    const imageFile = req.file;
+
+    // ✅ use buffer directly
+    const response = await imagekit.upload({
+      file: imageFile.buffer,          // <<< KEY FIX
+      fileName: imageFile.originalname,
+      folder: "/users",
+    });
+
+    const optimizedImageUrl = imagekit.url({
+      path: response.filePath,
+      transformation: [
+        { width: "400" },
+        { quality: "auto" },
+        { format: "webp" },
+      ],
+    });
+
+    await User.findByIdAndUpdate(_id, { image: optimizedImageUrl });
+
+    res.json({ success: true, message: "Image Updated" });
+
+  } catch (error) {
+    console.error("UPDATE USER IMAGE ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 
 //Update Car
