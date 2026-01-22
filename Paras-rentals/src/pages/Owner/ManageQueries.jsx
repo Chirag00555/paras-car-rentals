@@ -1,7 +1,9 @@
 import React, { useEffect, useState, Fragment } from 'react'
+import { motion } from 'framer-motion'
 import Title from '../../components/owner/Title'
 import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
+import { assets } from '../../assets/assets'
 
 const ManageQueries = () => {
 
@@ -54,100 +56,139 @@ const ManageQueries = () => {
   }, [isOwner])
 
   return (
-    <div className='px-4 pt-10 md:px-10 w-full'>
+    <div className="px-4 pt-10 md:px-10 w-full">
       <Title
         title="Manage Queries"
         subTitle="View customer queries and mark them as resolved."
       />
 
-      <div className='max-w-4xl w-full rounded-md overflow-hidden border border-borderColor mt-6'>
-        <table className='w-full border-collapse text-left text-sm text-gray-600'>
-          <thead className='text-gray-500'>
-            <tr>
-              <th className='p-3 font-medium'>Sr. No.</th>
-              <th className='p-3 font-medium'>Name</th>
-              <th className='p-3 font-medium'>Email</th>
-              <th className='p-3 font-medium'>Phone</th>
-              <th className='p-3 font-medium text-center'>Resolved</th>
-              <th className='p-3 font-medium text-center'>Message</th>
-            </tr>
-          </thead>
+      <div className="relative max-w-5xl w-full mt-6 border border-borderColor rounded-md overflow-hidden">
+        <div className="overflow-x-auto">
 
-          <tbody>
-            {queries.map((q, index) => (
-              <Fragment key={q._id}>
-                <tr className='border-t border-borderColor'>
-                  <td className='p-3'>{index + 1}</td>
+          <table className="min-w-[900px] w-full border-collapse text-left text-sm text-gray-600">
 
-                  <td className='p-3 font-medium'>{q.name}</td>
+            {/* ---------- TABLE HEAD ---------- */}
+            <thead className="bg-gray-100 text-gray-600">
+              <tr>
+                <th className="p-3 font-medium sticky left-0 z-20 bg-gray-100 border-r border-borderColor">
+                  Sr. No.
+                </th>
+                <th className="p-3 font-medium">Name</th>
+                <th className="p-3 font-medium">Email</th>
+                <th className="p-3 font-medium">Phone</th>
+                <th className="p-3 font-medium text-center">Resolved</th>
+                <th className="p-3 font-medium text-center">Message</th>
+                <th className="p-3 font-medium text-center">Delete</th>
+              </tr>
+            </thead>
 
-                  <td className='p-3'>
-                    <div className='flex items-center justify-between gap-3'>
-                        <span className='truncate max-w:180px'>{q.email}</span>
-                        <button
-                        onClick={() => copyText(q.email)}
-                        className='text-xs px-2 py-1 border rounded hover:bg-gray-100 whitespace-nowrap'
-                        >
-                        Copy
-                        </button>
-                    </div>
-                   </td>
-
-
-                    <td className='p-3'>
-                    <div className='flex items-center justify-between gap-3'>
-                        <span className='font-mono'>{q.phone}</span>
-                        <button
-                        onClick={() => copyText(q.phone)}
-                        className='text-xs px-2 py-1 border rounded hover:bg-gray-100 whitespace-nowrap'
-                        >
-                        Copy
-                        </button>
-                    </div>
+            {/* ---------- TABLE BODY ---------- */}
+            <tbody>
+              {queries.map((q, index) => (
+                <Fragment key={q._id}>
+                  <tr
+                    className={`border-t border-borderColor ${
+                      q.resolved ? 'bg-green-50' : ''
+                    }`}
+                  >
+                    {/* Sr No (FIXED) */}
+                    <td className="p-3 sticky left-0 z-10 bg-white border-r border-borderColor">
+                      {index + 1}
                     </td>
 
+                    <td className="p-3 font-medium">{q.name}</td>
 
-                  <td className='p-3 text-center'>
-                    <input
-                      type="checkbox"
-                      checked={q.resolved}
-                      onChange={() => toggleResolved(q._id, q.resolved)}
-                      className='cursor-pointer'
-                    />
-                  </td>
+                    <td className="p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate max-w-[200px]">
+                          {q.email}
+                        </span>
+                        <button
+                          onClick={() => copyText(q.email)}
+                          className="text-xs px-2 py-1 border rounded hover:bg-gray-100 whitespace-nowrap"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </td>
 
-                  <td className='p-3 text-center'>
-                    <button
-                      onClick={() =>
-                        setOpenRow(openRow === q._id ? null : q._id)
-                      }
-                      className='text-lg'
-                    >
-                      ⌄
-                    </button>
-                  </td>
-                </tr>
+                    <td className="p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">
+                          {q.phone}
+                        </span>
+                        <button
+                          onClick={() => copyText(q.phone)}
+                          className="text-xs px-2 py-1 border rounded hover:bg-gray-100 whitespace-nowrap"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </td>
 
-                {openRow === q._id && (
-                  <tr className='border-t border-borderColor bg-gray-50'>
-                    <td colSpan="6" className='p-4 text-gray-700'>
-                      <p className='font-medium mb-1'>Message</p>
-                      <p className='text-sm'>{q.message}</p>
+                    <td className="p-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={q.resolved}
+                        onChange={() => toggleResolved(q._id, q.resolved)}
+                        className="cursor-pointer"
+                      />
+                    </td>
+
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() =>
+                          setOpenRow(openRow === q._id ? null : q._id)
+                        }
+                        className="text-lg transition-transform duration-200"
+                        style={{
+                          transform:
+                            openRow === q._id
+                              ? 'rotate(180deg)'
+                              : 'rotate(0deg)'
+                        }}
+                      >
+                        ⌄
+                      </button>
+                    </td>
+
+                    <td className="p-3 text-center">
+                      <button className="text-xl text-red-500 hover:scale-110 transition">
+                        🗑
+                      </button>
                     </td>
                   </tr>
-                )}
-              </Fragment>
-            ))}
 
-            {queries.length === 0 && (
-              <tr>
-                <td colSpan="6" className='p-6 text-center text-gray-400'>
-                  No queries found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  {/* ---------- MESSAGE ROW ---------- */}
+                  {openRow === q._id && (
+                    <motion.tr
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      transition={{ duration: 0.25 }}
+                      className="border-t border-borderColor bg-gray-50"
+                    >
+                      <td colSpan="7" className="p-4">
+                        <p className="font-medium mb-1">Message</p>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                          {q.message}
+                        </p>
+                      </td>
+                    </motion.tr>
+                  )}
+                </Fragment>
+              ))}
+
+              {queries.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="p-6 text-center text-gray-400">
+                    No queries found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+
+          </table>
+        </div>
       </div>
     </div>
   )
