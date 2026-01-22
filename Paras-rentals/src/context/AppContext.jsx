@@ -33,6 +33,8 @@ export const AppProvider = ({children}) => {
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [showResetPassword, setShowResetPassword] = useState(false);
     const [otpEmail, setOtpEmail] = useState("");
+    const [authModalReason, setAuthModalReason] = useState(null);
+
 
 
 
@@ -123,7 +125,7 @@ useEffect(() => {
 
 
     const value = {
-        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours, isAuthReady, setIsAuthReady, showResetPassword, setShowResetPassword, showForgotPassword, setShowForgotPassword
+        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours, isAuthReady, setIsAuthReady, showResetPassword, setShowResetPassword, showForgotPassword, setShowForgotPassword, authModalReason, setAuthModalReason
     }
 
     return (

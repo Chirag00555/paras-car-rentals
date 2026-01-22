@@ -134,10 +134,13 @@ const Inquiry = () => {
         <label className="font-medium">Contact number</label>
         <div className="flex items-center mt-2 mb-4 h-10 pl-3 border border-slate-300 rounded-full focus-within:ring-2 focus-within:ring-indigo-400 transition-all overflow-hidden">
           <input
-            type="text"
+            type="tel"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
+            inputMode="numeric"
+            pattern="[0-9]{10}"
+            maxLength={10}
             className="h-full px-2 w-full outline-none bg-transparent"
             placeholder="Enter your Contact number"
             required

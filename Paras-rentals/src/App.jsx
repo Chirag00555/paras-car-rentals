@@ -21,6 +21,11 @@ import Coupons from './pages/Coupons'
 import ManageQueries from './pages/Owner/ManageQueries'
 import { Toaster } from 'react-hot-toast'
 import { useAppContext } from './context/AppContext'
+import AuthGuard from "./components/AuthGuard";
+import { AnimatePresence } from "motion/react";
+
+
+
 // import ProtectedRoute from "./components/ProtectedRoute";
 
 
@@ -31,10 +36,12 @@ const App = () => {
   return (
     <>
     <Toaster />
+    <AnimatePresence>
       {showLogin && <Login />}
       {showForgotPassword && <ForgotPassword />}
       {showResetPassword && <ResetPassword />}
-      {showOtp && <VerifyOtp email={otpEmail} />}
+      {showOtp && <VerifyOtp email={otpEmail} />}      
+    </AnimatePresence>
       
       {!isOwnerPath && <Navbar />}
 
@@ -42,8 +49,25 @@ const App = () => {
         <Route path='/' element={<Home/>}/>
         <Route path='/car-details/:id' element={<CarDetails/>}/>
         <Route path='/cars' element={<Cars/>}/>
-        <Route path='/my-bookings' element={<MyBookings/>}/>
-        <Route path='/coupons' element={<Coupons/>}/>
+        
+        <Route path="/my-bookings"
+          element={
+            <AuthGuard>
+              <MyBookings />
+            </AuthGuard>
+          }
+        />
+
+        <Route path="/coupons"
+          element={
+            <AuthGuard>
+              <Coupons />
+            </AuthGuard>
+          }
+        />
+
+        {/* <Route path='/about-us' element={<AboutUs/>}/> */}
+
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         <Route path="/inquiry" element={<Inquiry />} />
