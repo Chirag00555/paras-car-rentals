@@ -3,6 +3,10 @@ import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 
 const VerifyOtp = ({ email }) => {
+
+  const [isVerifying, setIsVerifying] = useState(false);
+const [isResending, setIsResending] = useState(false);
+
   const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
@@ -20,21 +24,33 @@ const VerifyOtp = ({ email }) => {
     return () => clearInterval(interval);
   }, [timer]);
 
-  const resendOtpHandler = async () => {
-    try {
-      const { data } = await axios.post("/api/user/resend-otp", { email });
-      if (data.success) {
-        toast.success("OTP resent");
-        setTimer(60);
-        setCanResend(false);
-      } else toast.error(data.message);
-    } catch (err) {
-      toast.error(err.message);
+const resendOtpHandler = async () => {
+  if (!canResend || isResending) return; // 🛑 safety check
+  setIsResending(true);
+
+  try {
+    const { data } = await axios.post("/api/user/resend-otp", { email });
+
+    if (data.success) {
+      toast.success("OTP resent");
+      setTimer(60);
+      setCanResend(false);
+    } else {
+      toast.error(data.message);
     }
-  };
+  } catch (err) {
+    toast.error(err.response?.data?.message || err.message);
+  } finally {
+    setIsResending(false);
+  }
+};
+
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+  if (isVerifying) return;   // 🛑 block double click
+  setIsVerifying(true); 
 
     try {
       const verifyRes = await axios.post("/api/user/verify-email-otp", {
@@ -64,7 +80,9 @@ const VerifyOtp = ({ email }) => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
-    }
+    }finally {
+    setIsVerifying(false); // 🔓 always unlock
+  }
   };
 
   return (
@@ -90,25 +108,43 @@ const VerifyOtp = ({ email }) => {
         required
       />
 
-      <button
-        type="submit"
-        className="bg-primary hover:bg-blue-800 transition-all text-white py-2 rounded-md"
-      >
-        Verify OTP
-      </button>
+<button
+  type="submit"
+  disabled={isVerifying}
+  className={`py-2 rounded-md text-white transition-all
+    ${isVerifying
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-primary hover:bg-blue-800"
+    }`}
+>
+  {isVerifying ? (
+    <span className="flex items-center justify-center gap-2">
+      <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      Verifying...
+    </span>
+  ) : (
+    "Verify OTP"
+  )}
+</button>
 
-      <button
-        type="button"
-        disabled={!canResend}
-        onClick={resendOtpHandler}
-        className={`py-2 rounded-md text-sm transition-all ${
-          canResend
-            ? "bg-gray-700 text-white hover:bg-gray-800"
-            : "bg-gray-200 text-gray-500 cursor-not-allowed"
-        }`}
-      >
-        {canResend ? "Resend OTP" : `Resend OTP in ${timer}s`}
-      </button>
+
+     <button
+  type="button"
+  disabled={!canResend || isResending}
+  onClick={resendOtpHandler}
+  className={`py-2 rounded-md text-sm transition-all
+    ${canResend && !isResending
+      ? "bg-gray-700 text-white hover:bg-gray-800"
+      : "bg-gray-200 text-gray-500 cursor-not-allowed"
+    }`}
+>
+  {isResending
+    ? "Resending..."
+    : canResend
+    ? "Resend OTP"
+    : `Resend OTP in ${timer}s`}
+</button>
+
     </form>
   </div>
 );

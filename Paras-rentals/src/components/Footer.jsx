@@ -94,7 +94,18 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             className='flex flex-col md:flex-row gap-2 items-center justify-between py-5'>
-                <p>© {new Date().getFullYear()} Brand. All rights reserved.</p>
+            <p>
+                © {new Date().getFullYear()} Paras Rentals. All rights reserved. · Developed with ❤️ by{" "}
+                <a
+                    href="https://github.com/chirag00555"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-gray-600"
+                >
+                    Chirag Jain
+                </a>
+            </p>
+
                 <ul className='flex items-center gap-4'>
                     <li><a href="#">Privacy</a></li>
                     <li>|</li>

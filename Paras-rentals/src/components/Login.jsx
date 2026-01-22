@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 
 const Login = () => {
 
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
     const {setShowLogin, axios, setToken, navigate, setOtpEmail, setShowOtp} = useAppContext()
 
     const [state, setState] = React.useState("login");
@@ -14,6 +16,8 @@ const Login = () => {
     const onSubmitHandler = async (event) => {
   event.preventDefault();
 
+    if (isSubmitting) return;   // 🛑 block double click
+  setIsSubmitting(true);  
   try {
     const { data } = await axios.post(
       `/api/user/${state}`,
@@ -48,7 +52,9 @@ const Login = () => {
 
         } catch (error) {
             toast.error(error.response?.data?.message || error.message);
-        }
+        } finally {
+    setIsSubmitting(false);   // 🔓 unlock ALWAYS
+  }
     };
 
     
@@ -98,9 +104,25 @@ const Login = () => {
                     Create an account? <span onClick={() => setState("register")} className="text-primary cursor-pointer">click here</span>
                 </p>
             )}
-            <button className="bg-primary hover:bg-blue-800 transition-all text-white w-full py-2 rounded-md cursor-pointer">
-                {state === "register" ? "Create Account" : "Login"}
-            </button>
+                            <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full py-2 rounded-md transition-all text-white
+                    ${isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-primary hover:bg-blue-800 cursor-pointer"
+                    }`}
+                >
+                {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                    <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    {state === "register" ? "Creating..." : "Logging in..."}
+                    </span>
+                ) : (
+                    state === "register" ? "Create Account" : "Login"
+                )}
+                </button>
+
         </form>
     </div>
   )

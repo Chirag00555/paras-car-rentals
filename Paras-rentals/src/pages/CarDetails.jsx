@@ -5,8 +5,48 @@ import Loader from '../components/Loader'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
 import { motion } from 'motion/react'
+import { JABALPUR_LOCATIONS } from '../assets/assets'
+
 
 const CarDetails = () => {
+
+    const [pickupSuggestions, setPickupSuggestions] = useState([]);
+    const [dropSuggestions, setDropSuggestions] = useState([]);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+    // const fetchJabalpurPlaces = async (query, setSuggestions) => {
+    //       if (query.length < 3) {
+    //         setSuggestions([]);
+    //         return;
+    //     }
+
+    //     const res = await fetch(
+    //         `https://nominatim.openstreetmap.org/search?format=json&q=${query} jabalpur india&limit=5`
+    //     );
+    //     const data = await res.json();
+
+    //     setSuggestions(
+    //         data.filter(place =>
+    //         place.display_name.toLowerCase().includes("jabalpur")
+    //         )
+    //     );
+    // };
+
+    const filterLocations = (query) => {
+  if (!query) return [];
+
+  return JABALPUR_LOCATIONS
+    .filter(place =>
+      place.toLowerCase().includes(query.toLowerCase())
+    )
+    .slice(0, 6); // max 6 suggestions
+};
+
+
+
+
 
     const {id} = useParams()
     const {cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, phone, setPhone, pickupService, setPickupService, pickupLocation, setPickupLocation, dropService, setDropService, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime} = useAppContext()
@@ -66,6 +106,10 @@ const CarDetails = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+         if (isSubmitting) return; // 🛑 block double click
+         setIsSubmitting(true);    // 🔒 lock button
+
+
         // 1️⃣ basic validation
         if (!pickupDate || !pickupTime || !returnDate || !returnTime) {
             toast.error("Please select pickup and return date & time")
@@ -123,6 +167,8 @@ const CarDetails = () => {
 
         } catch (error) {
             toast.error(error.message)
+        }finally {
+            setIsSubmitting(false); // 🔓 unlock button ALWAYS
         }
     }
 
@@ -335,36 +381,106 @@ const CarDetails = () => {
                 <input value={phone} onChange={(e)=>setPhone(e.target.value)}
                 type="tel" className='border border-borderColor px-3 py-2 rounded-lg' placeholder='Enter Contact number' required id='phone' />
             </div>
+{/* Pickup Service */}
+<div className="flex flex-col gap-2 relative">
+  <label className="flex items-center gap-3 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={pickupService}
+      onChange={() => {
+        setPickupService(!pickupService);
+        setPickupLocation("");
+        setPickupSuggestions([]);
+      }}
+    />
+    <span>Pickup Service (+ ₹400)</span>
+  </label>
 
-            <div className='flex flex-col gap-2'>
-                <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={pickupService}     onChange={() => setPickupService(!pickupService)}
-                />
-                <span>Pickup Service (+ ₹400)</span>
-            </label>
+  {pickupService && (
+    <>
+      <input
+        type="text"
+        placeholder="Enter pickup location"
+        value={pickupLocation}
+        onChange={(e) => {
+          setPickupLocation(e.target.value);
+          setPickupSuggestions(filterLocations(e.target.value));
+        }}
+        className="border px-3 py-2 rounded-lg"
+        required
+      />
 
-              {pickupService && (
-                <input type="text" placeholder="Enter pickup location"   value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)}
-                className="border px-3 py-2 rounded-lg"
-                required
-                />
-            )}
-            </div>
+      {pickupSuggestions.length > 0 && (
+        <ul className="absolute top-full left-0 z-20 bg-white border rounded-lg w-full max-h-40 overflow-y-auto">
+          {pickupSuggestions.map((place, index) => (
+            <li
+              key={index}
+              className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+              onClick={() => {
+                setPickupLocation(place);
+                setPickupSuggestions([]);
+              }}
+            >
+              📍 {place}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  )}
+</div>
 
-            <div className='flex flex-col gap-2'>
-                <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={dropService}     onChange={() => setDropService(!dropService)}
-                />
-                <span>Drop Service (+ ₹400)</span>
-            </label>
 
-              {dropService && (
-                <input type="text" placeholder="Enter drop location"   value={dropLocation} onChange={(e) => setDropLocation(e.target.value)}
-                className="border px-3 py-2 rounded-lg"
-                required
-                />
-            )}
-            </div>
+{/* Drop Service */}
+<div className="flex flex-col gap-2 relative">
+  <label className="flex items-center gap-3 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={dropService}
+      onChange={() => {
+        setDropService(!dropService);
+        setDropLocation("");
+        setDropSuggestions([]);
+      }}
+    />
+    <span>Drop Service (+ ₹400)</span>
+  </label>
+
+  {dropService && (
+    <>
+      <input
+        type="text"
+        placeholder="Enter drop location"
+        value={dropLocation}
+        onChange={(e) => {
+          setDropLocation(e.target.value);
+          setDropSuggestions(filterLocations(e.target.value));
+        }}
+        className="border px-3 py-2 rounded-lg"
+        required
+      />
+
+      {dropSuggestions.length > 0 && (
+        <ul className="absolute top-full left-0 z-20 bg-white border rounded-lg w-full max-h-40 overflow-y-auto">
+          {dropSuggestions.map((place, index) => (
+            <li
+              key={index}
+              className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+              onClick={() => {
+                setDropLocation(place);
+                setDropSuggestions([]);
+              }}
+            >
+              📍 {place}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  )}
+</div>
+
+
 
 
             <div className="mt-4 p-3 border rounded-lg bg-gray-50">
@@ -384,7 +500,25 @@ const CarDetails = () => {
             
 
 
-            <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>
+                <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full py-3 font-medium text-white rounded-xl transition-all
+                    ${isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-primary hover:bg-primary-dull cursor-pointer"
+                    }`}
+                >
+                {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                    <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    Requesting...
+                    </span>
+                ) : (
+                    "Request Booking"
+                )}
+                </button>
+
 
             <p className='text-center text-sm'>No credit required to reserve</p>
         </motion.form>

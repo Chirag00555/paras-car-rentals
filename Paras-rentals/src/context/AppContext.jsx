@@ -29,6 +29,8 @@ export const AppProvider = ({children}) => {
     const [pickupTime, setPickupTime] = useState("")
     const [returnTime, setReturnTime] = useState("")
     const [pricePer12Hours, setPricePer12Hours] = useState("")
+    const [isAuthReady, setIsAuthReady] = useState(false);
+
 
 
 
@@ -83,12 +85,22 @@ export const AppProvider = ({children}) => {
 
     //useEffect to fetch user data when token is available
 
-    useEffect(()=>{
-        if(token){
-            axios.defaults.headers.common['Authorization'] = `${token}`
-            fetchUser()
-        }
-    },[token])
+useEffect(() => {
+  if (!token) {
+    setIsAuthReady(true); // no token, but auth check done
+    return;
+  }
+
+  axios.defaults.headers.common['Authorization'] = token;
+
+  const initAuth = async () => {
+    await fetchUser();      // sets isOwner
+    setIsAuthReady(true);   // ✅ auth fully ready
+  };
+
+  initAuth();
+}, [token]);
+
 
     const value = {
         navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours

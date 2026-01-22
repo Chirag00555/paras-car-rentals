@@ -5,8 +5,9 @@ import { toast } from 'react-hot-toast'
 
 const ManageBookings = () => {
 
-  const { currency, axios } = useAppContext()
+  const { currency, axios, token, isOwner, isAuthReady } = useAppContext()
   const [bookings, setBookings] = useState([])
+
 
   const fetchOwnerBookings = async () => {
     try {
@@ -35,9 +36,15 @@ const ManageBookings = () => {
     }
   }
 
-  useEffect(() => {
-    fetchOwnerBookings()
-  }, [])
+
+
+
+useEffect(() => {
+  if (!isAuthReady || !token || !isOwner) return;
+  fetchOwnerBookings();
+}, [isAuthReady, token, isOwner]);
+
+
 
 
   const getStatusClass = (status) => {
