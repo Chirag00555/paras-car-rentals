@@ -21,7 +21,7 @@ import Coupons from './pages/Coupons'
 import ManageQueries from './pages/Owner/ManageQueries'
 import { Toaster } from 'react-hot-toast'
 import { useAppContext } from './context/AppContext'
-import ProtectedRoute from "./components/ProtectedRoute";
+// import ProtectedRoute from "./components/ProtectedRoute";
 
 
 const App = () => {

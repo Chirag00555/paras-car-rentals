@@ -77,33 +77,49 @@ export const AppProvider = ({children}) => {
 
     //useEffect to retrive the token from local Storage
 
-    useEffect(()=>{
-        const token = localStorage.getItem('token')
-        setToken(token)
-        fetchCars()
-    },[])
-
-    //useEffect to fetch user data when token is available
-
+// 1️⃣ Read token ONCE
 useEffect(() => {
-  if (!token) {
-    setIsAuthReady(true); // no token, but auth check done
-    return;
-  }
+  const storedToken = localStorage.getItem("token");
 
-  axios.defaults.headers.common['Authorization'] = token;
+  if (storedToken) {
+    setToken(storedToken);
+  } else {
+    setIsAuthReady(true); // no login, auth resolved
+  }
+}, []);
+
+
+// 2️⃣ Bootstrap auth when token is set
+useEffect(() => {
+  if (!token) return;
+
+  axios.defaults.headers.common["Authorization"] = token;
 
   const initAuth = async () => {
-    await fetchUser();      // sets isOwner
-    setIsAuthReady(true);   // ✅ auth fully ready
+    try {
+      await fetchUser();   // sets user + isOwner
+    } catch (err) {
+      console.error("fetchUser failed:", err);
+      setToken(null); // optional: force logout on bad token
+      localStorage.removeItem("token");
+    } finally {
+      setIsAuthReady(true); // ✅ ALWAYS runs
+    }
   };
 
   initAuth();
 }, [token]);
 
 
+// 3️⃣ Fetch public data AFTER auth ready (important)
+useEffect(() => {
+  if (!isAuthReady) return;
+  fetchCars();
+}, [isAuthReady]);
+
+
     const value = {
-        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours
+        navigate, currency, axios, user, setUser, token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, pickupDate, setPickupDate, returnDate, setReturnDate, showOtp, setShowOtp, otpEmail, setOtpEmail, phone, setPhone, pickupService, setPickupService, dropService, setDropService, pickupLocation, setPickupLocation, dropLocation, setDropLocation, pickupTime, setPickupTime, returnTime, setReturnTime, pricePer12Hours, setPricePer12Hours, isAuthReady, setIsAuthReady
     }
 
     return (
