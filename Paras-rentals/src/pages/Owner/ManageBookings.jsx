@@ -4,10 +4,12 @@ import Title from '../../components/owner/Title'
 import { useAppContext } from '../../context/AppContext'
 import { toast } from 'react-hot-toast'
 import { assets } from '../../assets/assets'
+import { Copy, Search } from 'lucide-react'
 
 const ManageBookings = () => {
   const { currency, axios, token, isOwner, isAuthReady } = useAppContext()
   const [bookings, setBookings] = useState([])
+  const [searchId, setSearchId] = useState('')
 
   const fetchOwnerBookings = async () => {
     try {
@@ -40,6 +42,13 @@ const ManageBookings = () => {
     fetchOwnerBookings()
   }, [isAuthReady, token, isOwner])
 
+  // 📋 COPY BOOKING ID
+  const copyBookingId = (id) => {
+    if (!id) return
+    navigator.clipboard.writeText(id)
+    toast.success('Booking ID copied')
+  }
+
   const copyPhone = (phone) => {
     navigator.clipboard.writeText(phone)
     toast.success('Number copied')
@@ -60,6 +69,13 @@ const ManageBookings = () => {
     }
   }
 
+  // 🔍 FILTER BY BOOKING ID
+  const filteredBookings = bookings.filter((booking) =>
+    booking.bookingId
+      ? booking.bookingId.toLowerCase().includes(searchId.toLowerCase())
+      : searchId === ''
+  )
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -72,17 +88,31 @@ const ManageBookings = () => {
         subTitle="Track all customer bookings, approve or cancel requests, and manage booking statuses."
       />
 
+      {/* 🔍 SEARCH BAR */}
+      <div className="mt-6 mb-4 flex gap-2">
+        <input
+          type="text"
+          placeholder="Search by Booking ID (e.g. BK-ABC03DE6)"
+          value={searchId}
+          onChange={(e) => setSearchId(e.target.value)}
+          className="w-full md:w-1/3 px-4 py-2 border border-borderColor rounded-md outline-none focus:ring-2 focus:ring-primary"
+        />
+        <button className="flex items-center gap-1 px-4 py-2 bg-primary text-white rounded-md hover:opacity-90">
+          <Search size={16} />
+          Search
+        </button>
+      </div>
+
       {/* Horizontal scroll container */}
-      <div className="mt-6 w-full overflow-x-auto">
-        <table className="min-w-[950px] w-full border border-borderColor rounded-md border-collapse text-sm text-gray-600">
+      <div className="mt-4 w-full overflow-x-auto">
+        <table className="min-w-[1050px] w-full border border-borderColor rounded-md border-collapse text-sm text-gray-600">
           <thead className="bg-gray-50">
             <tr>
-              {/* FIXED SERIAL NUMBER COLUMN */}
-              <th className="sticky left-0 z-30 bg-gray-50 p-3 text-left w-[80px] border-r border-borderColor">
-                Sr. No.
+              {/* BOOKING ID COLUMN */}
+              <th className="sticky left-0 z-30 bg-gray-50 p-3 text-left w-[180px] border-r border-borderColor">
+                Booking ID
               </th>
 
-              {/* SCROLLABLE COLUMNS */}
               <th className="p-3 text-left w-[220px]">Car</th>
               <th className="p-3 text-left">Date & Time</th>
               <th className="p-3 text-left">Contact</th>
@@ -92,7 +122,7 @@ const ManageBookings = () => {
           </thead>
 
           <tbody>
-            {bookings.map((booking, index) => {
+            {filteredBookings.map((booking, index) => {
               if (!booking.car) return null
 
               const pickup = new Date(booking.pickupDateTime)
@@ -100,15 +130,26 @@ const ManageBookings = () => {
 
               return (
                 <motion.tr
-                  key={index}
+                  key={booking._id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.04 }}
                   className="border-t border-borderColor bg-white"
                 >
-                  {/* FIXED SERIAL NUMBER */}
+                  {/* BOOKING ID */}
                   <td className="sticky left-0 z-20 bg-white p-3 border-r border-borderColor">
-                    {index + 1}
+                    <div className="flex items-center gap-2 font-mono text-xs">
+                      <span>{booking.bookingId || 'N/A'}</span>
+                      {booking.bookingId && (
+                        <button
+                          onClick={() => copyBookingId(booking.bookingId)}
+                          className="hover:text-primary"
+                          title="Copy Booking ID"
+                        >
+                          <Copy size={14} />
+                        </button>
+                      )}
+                    </div>
                   </td>
 
                   {/* CAR */}
@@ -137,12 +178,13 @@ const ManageBookings = () => {
                     <div className="flex items-center gap-2">
                       <span>{booking.phone || 'N/A'}</span>
                       {booking.phone && (
-                        <img
-                          src={assets.copy_icon}
-                          alt="copy"
-                          className="h-4 w-4 cursor-pointer"
-                          onClick={() => copyPhone(booking.phone)}
-                        />
+                        <button
+                          onClick={() => copyBookingId(booking.bookingId)}
+                          className="hover:text-primary"
+                          title="Copy Booking ID"
+                        >
+                          <Copy size={14} />
+                        </button>
                       )}
                     </div>
                   </td>

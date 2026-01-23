@@ -1,5 +1,6 @@
     import Booking from "../models/Booking.js"
     import sendEmail from "../utils/sendEmail.js";
+    import { v4 as uuidv4 } from 'uuid'
 import {
   ownerBookingRequestTemplate,
   customerBookingRequestTemplate,
@@ -146,8 +147,8 @@ export const createBooking = async (req, res) => {
     }
 
 // ✅ Convert IST → UTC before creating Date
-const pickup = new Date(pickupDateTime + ":00+05:30")
-const drop = new Date(returnDateTime + ":00+05:30")
+  const pickup = new Date(pickupDateTime + ":00+05:30")
+  const drop = new Date(returnDateTime + ":00+05:30")
 
 
     if (isNaN(pickup.getTime()) || isNaN(drop.getTime())) {
@@ -231,8 +232,10 @@ const drop = new Date(returnDateTime + ":00+05:30")
 
     if (pickupService) price += 400
     if (dropService) price += 400
+    const bookingId = `BK-${uuidv4().slice(0, 8).toUpperCase()}`
 
     const booking = await Booking.create({
+      bookingId, 
       car: carId,
       user: _id,
       pickupDateTime,
@@ -275,7 +278,7 @@ const drop = new Date(returnDateTime + ":00+05:30")
     }
 
 
-    res.json({ success: true, message: "Booking Created" })
+    res.json({ success: true, message: "Booking Created", bookingId: booking.bookingId })
 
   } catch (error) {
     console.error(error)

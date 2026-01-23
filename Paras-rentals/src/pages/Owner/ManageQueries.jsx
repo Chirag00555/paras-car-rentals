@@ -4,6 +4,7 @@ import Title from '../../components/owner/Title'
 import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
 import { assets } from '../../assets/assets'
+import { Copy, Search } from 'lucide-react'
 
 const ManageQueries = () => {
 
@@ -104,10 +105,11 @@ const ManageQueries = () => {
                           {q.email}
                         </span>
                         <button
-                          onClick={() => copyText(q.email)}
-                          className="text-xs px-2 py-1 border rounded hover:bg-gray-100 whitespace-nowrap"
+                          onClick={() => copyBookingId(booking.bookingId)}
+                          className="hover:text-primary"
+                          title="Copy Booking ID"
                         >
-                          Copy
+                          <Copy size={14} />
                         </button>
                       </div>
                     </td>
@@ -118,10 +120,11 @@ const ManageQueries = () => {
                           {q.phone}
                         </span>
                         <button
-                          onClick={() => copyText(q.phone)}
-                          className="text-xs px-2 py-1 border rounded hover:bg-gray-100 whitespace-nowrap"
+                          onClick={() => copyBookingId(booking.bookingId)}
+                          className="hover:text-primary"
+                          title="Copy Booking ID"
                         >
-                          Copy
+                          <Copy size={14} />
                         </button>
                       </div>
                     </td>

@@ -12,14 +12,12 @@ const bookingSchema = new mongoose.Schema({
         ref: 'User', 
         required: true,
     },
-    // pickupDate: {
-    //     type: Date,
-    //     required: true,
-    // },
-    // returnDate: {
-    //     type: Date,
-    //     required: true,
-    // },
+    bookingId: {
+        type: String,
+        required: true,
+        unique: true,
+        immutable: true,
+    },
     phone: {
         type: String,
         required: true

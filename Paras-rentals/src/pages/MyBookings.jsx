@@ -4,11 +4,13 @@ import Title from '../components/Title'
 import { useAppContext } from '../context/AppContext'
 import { motion } from 'motion/react'
 import toast from 'react-hot-toast'
+import { Copy, Search } from 'lucide-react'
 
 const MyBookings = () => {
 
   const { axios, user, currency } = useAppContext()
   const [bookings, setBookings] = useState([])
+  const [searchId, setSearchId] = useState('')
 
   const fetchMyBookings = async () => {
     try {
@@ -27,25 +29,19 @@ const MyBookings = () => {
     user && fetchMyBookings()
   }, [user])
 
-  // ✅ STATUS LABELS (USER FRIENDLY)
+  // ✅ STATUS LABELS
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'pending':
-        return 'Pending Approval'
-      case 'confirmed':
-        return 'Confirmed'
-      case 'completed':
-        return 'Ride Completed'
-      case 'cancelled':
-        return 'Booking Cancelled'
-      case 'declined':
-        return 'Booking Declined'
-      default:
-        return status
+      case 'pending': return 'Pending Approval'
+      case 'confirmed': return 'Confirmed'
+      case 'completed': return 'Ride Completed'
+      case 'cancelled': return 'Booking Cancelled'
+      case 'declined': return 'Booking Declined'
+      default: return status
     }
   }
 
-  // ✅ STATUS COLORS (CONSISTENT WITH OWNER PANEL)
+  // ✅ STATUS COLORS
   const getStatusClass = (status) => {
     switch (status) {
       case 'pending':
@@ -61,6 +57,20 @@ const MyBookings = () => {
     }
   }
 
+  // 🔍 FILTER BOOKINGS BY BOOKING ID
+  const filteredBookings = bookings.filter((booking) =>
+    booking.bookingId
+      ? booking.bookingId.toLowerCase().includes(searchId.toLowerCase())
+      : searchId === ''
+  )
+
+  // 📋 COPY BOOKING ID
+  const copyBookingId = (id) => {
+    if (!id) return
+    navigator.clipboard.writeText(id)
+    toast.success('Booking ID copied')
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -70,12 +80,34 @@ const MyBookings = () => {
     >
       <Title
         title="My Bookings"
-        subTitle="View and manage your all car bookings"
+        subTitle="View and manage your car bookings"
         align="left"
       />
 
+      {/* 🔍 SEARCH BAR + BUTTON */}
+      <div className='mb-6 flex gap-2'>
+        <input
+          type='text'
+          placeholder='Search by Booking ID (e.g. BK-ABC03DE6)'
+          value={searchId}
+          onChange={(e) => setSearchId(e.target.value)}
+          className='w-full md:w-1/2 px-4 py-2 border border-borderColor rounded-md outline-none focus:ring-2 focus:ring-primary'
+        />
+
+        <button
+          className='flex items-center gap-1 px-4 py-2 bg-primary text-white rounded-md hover:opacity-90'
+        >
+          <Search size={16} />
+          Search
+        </button>
+      </div>
+
       <div>
-        {bookings.map((booking, index) => {
+        {filteredBookings.length === 0 && (
+          <p className='text-gray-500 mt-10'>No bookings found.</p>
+        )}
+
+        {filteredBookings.map((booking, index) => {
 
           const pickup = new Date(booking.pickupDateTime)
           const drop = new Date(booking.returnDateTime)
@@ -98,7 +130,7 @@ const MyBookings = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className='grid grid-cols-1 md:grid-cols-4 gap-6 p-6 border border-borderColor rounded-lg mt-5 first:mt-12'
+              className='grid grid-cols-1 md:grid-cols-4 gap-6 p-6 border border-borderColor rounded-lg mt-5'
             >
 
               {/* Car Info */}
@@ -132,6 +164,23 @@ const MyBookings = () => {
                   >
                     {getStatusLabel(booking.status)}
                   </p>
+                </div>
+
+                {/* ✅ BOOKING ID + COPY ICON */}
+                <div className='mt-2 flex items-center gap-2 text-xs text-gray-600 font-mono'>
+                  <span>
+                    Booking ID: {booking.bookingId || 'N/A'}
+                  </span>
+
+                  {booking.bookingId && (
+                    <button
+                      onClick={() => copyBookingId(booking.bookingId)}
+                      className='hover:text-primary'
+                      title='Copy Booking ID'
+                    >
+                      <Copy size={14} />
+                    </button>
+                  )}
                 </div>
 
                 <div className='flex items-start gap-2 mt-3'>
