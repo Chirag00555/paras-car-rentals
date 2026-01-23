@@ -65,7 +65,7 @@ const AddCar = () => {
   }
 
   const years = Array.from(
-    { length: new Date().getFullYear() - 1999 },
+    { length: new Date().getFullYear() - 1900 },
     (_, i) => new Date().getFullYear() - i
   )
 
@@ -229,7 +229,7 @@ const AddCar = () => {
               <option value="">Select category</option>
               <option>Sedan</option>
               <option>SUV</option>
-              <option>Van</option>
+              <option>Sub Compact SUV</option>
             </select>
           </div>
 
