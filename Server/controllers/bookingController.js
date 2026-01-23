@@ -24,6 +24,19 @@ import {
 
     //     return bookings.length === 0
     // }
+    // utils/dateFormatter.js (optional later)
+    const formatIST = (dateTime) => {
+      return new Date(dateTime).toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      })
+    }
+
 
 const checkAvailability = async (
   car,
@@ -257,15 +270,19 @@ const isRestrictedTime = (date) => {
 
         // 📧 EMAIL NOTIFICATIONS (NON-BREAKING ADDITION)
     try {
-      const bookingData = {
-        customerName: req.user.name,
-        phone,
-        carName: carData.name,
-        pickupDateTime,
-        returnDateTime
-      };
+    const bookingData = {
+      bookingId: booking.bookingId,
+      customerName: req.user.name,
+      carName: `${carData.brand} ${carData.model}`,
+      pickup: formatIST(booking.pickupDateTime),
+      return: formatIST(booking.returnDateTime),
+      status: "Pending"
+    }
+
 
       // Email to OWNER
+      
+
       await sendEmail({
         email: process.env.EMAIL_USER,
         subject: "New Booking Request – Action Required",
@@ -425,91 +442,95 @@ const isRestrictedTime = (date) => {
 
 export const changeBookingStatus = async (req, res) => {
   try {
-    const { bookingId, status } = req.body;
+    const { bookingId, status } = req.body
 
-    const normalizedStatus = status.toLowerCase();
+    const normalizedStatus = status.toLowerCase()
 
-    const booking = await Booking.findById(bookingId)
+    // 🔍 Find booking by bookingId (NOT _id)
+    const booking = await Booking.findOne({ bookingId })
       .populate("user", "name email")
-      .populate("car", "name");
+      .populate("car", "brand model")
 
     if (!booking) {
-      return res.json({ success: false, message: 'Booking not found' });
+      return res.json({ success: false, message: "Booking not found" })
     }
 
-    // Availability check only when confirming
-    if (normalizedStatus === 'confirmed') {
+    // 🚗 Availability check only on confirm
+    if (normalizedStatus === "confirmed") {
       const isAvailable = await checkAvailability(
-      booking.car._id,
-      booking.pickupDateTime,
-      booking.returnDateTime,
-      booking._id
-    )
-
+        booking.car._id,
+        booking.pickupDateTime,
+        booking.returnDateTime,
+        booking._id
+      )
 
       if (!isAvailable) {
         return res.json({
           success: false,
-          message: 'Car not available for this time slot'
-        });
+          message: "Car not available for this time slot"
+        })
       }
     }
 
-    // ✅ SAVE STATUS AS-IS
-    booking.status = normalizedStatus;
-    await booking.save();
+    // ✅ Update status
+    booking.status = normalizedStatus
+    await booking.save()
 
-    // 📧 EMAIL NOTIFICATIONS (SAFE, NON-BLOCKING)
+    // 📧 EMAIL NOTIFICATIONS (NON-BLOCKING)
     try {
       const bookingData = {
+        bookingId: booking.bookingId,
         customerName: booking.user.name,
-        carName: booking.car.name,
-        pickupDateTime: booking.pickupDateTime,
-        returnDateTime: booking.returnDateTime
-      };
+        carName: `${booking.car.brand} ${booking.car.model}`,
+        pickup: formatIST(booking.pickupDateTime),
+        return: formatIST(booking.returnDateTime),
+        status:
+          normalizedStatus.charAt(0).toUpperCase() +
+          normalizedStatus.slice(1)
+      }
 
       if (normalizedStatus === "confirmed") {
         await sendEmail({
           email: booking.user.email,
-          subject: "Booking Confirmed – Paras Rentals",
+          subject: `Booking Confirmed | ${booking.bookingId} | Paras Rentals`,
           message: bookingConfirmedTemplate(bookingData)
-        });
+        })
       }
 
       if (normalizedStatus === "declined") {
         await sendEmail({
           email: booking.user.email,
-          subject: "Booking Request Declined – Paras Rentals",
+          subject: `Booking Declined | ${booking.bookingId} | Paras Rentals`,
           message: bookingDeclinedTemplate(bookingData)
-        });
+        })
       }
 
       if (normalizedStatus === "cancelled") {
         await sendEmail({
           email: booking.user.email,
-          subject: "Booking Cancelled – Paras Rentals",
+          subject: `Booking Cancelled | ${booking.bookingId} | Paras Rentals`,
           message: bookingCancelledTemplate(bookingData)
-        });
+        })
       }
 
       if (normalizedStatus === "completed") {
         await sendEmail({
           email: booking.user.email,
-          subject: "Booking Completed – Paras Rentals",
+          subject: `Booking Completed | ${booking.bookingId} | Paras Rentals`,
           message: bookingCompletedTemplate(bookingData)
-        });
+        })
       }
 
     } catch (mailError) {
-      console.error("Booking status email error:", mailError);
+      console.error("Booking status email error:", mailError.message)
     }
 
-    res.json({ success: true, message: 'Booking status updated' });
+    res.json({ success: true, message: "Booking status updated" })
 
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message })
   }
-};
+}
 
 
 
