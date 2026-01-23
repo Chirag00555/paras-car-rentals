@@ -52,17 +52,17 @@ const App = () => {
         
         <Route path="/my-bookings"
           element={
-            <AuthGuard>
+            
               <MyBookings />
-            </AuthGuard>
+            
           }
         />
 
         <Route path="/coupons"
           element={
-            <AuthGuard>
+            
               <Coupons />
-            </AuthGuard>
+            
           }
         />
 
