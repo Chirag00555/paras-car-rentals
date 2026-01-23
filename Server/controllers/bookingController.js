@@ -145,8 +145,10 @@ export const createBooking = async (req, res) => {
       return res.json({ success: false, message: "Drop location required" })
     }
 
-    const pickup = new Date(pickupDateTime)
-    const drop = new Date(returnDateTime)
+// ✅ Convert IST → UTC before creating Date
+const pickup = new Date(pickupDateTime + ":00+05:30")
+const drop = new Date(returnDateTime + ":00+05:30")
+
 
     if (isNaN(pickup.getTime()) || isNaN(drop.getTime())) {
       return res.json({ success: false, message: "Invalid date/time provided" })
