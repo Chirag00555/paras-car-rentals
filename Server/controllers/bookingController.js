@@ -62,7 +62,7 @@ const checkAvailability = async (
 
     //API to check availability of cars for the given Date and location 
 
-        export const checkAvailaibilityOfCar = async (req, res) => {
+  export const checkAvailaibilityOfCar = async (req, res) => {
         try {
             const { location, pickupDate, returnDate } = req.body
 
@@ -167,11 +167,17 @@ export const createBooking = async (req, res) => {
       })
     }
 
-    const isRestrictedTime = (date) => {
-      const h = date.getHours()
-      const m = date.getMinutes()
-      return (h === 23 && m >= 30) || (h >= 0 && h < 7)
-    }
+const isRestrictedTime = (date) => {
+  const istDate = new Date(
+    date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
+  )
+
+  const h = istDate.getHours()
+  const m = istDate.getMinutes()
+
+  return (h === 23 && m >= 30) || (h >= 0 && h < 7)
+}
+
 
     if (isRestrictedTime(pickup)) {
       return res.json({
