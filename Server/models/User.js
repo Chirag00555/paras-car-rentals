@@ -46,6 +46,13 @@ const UserSchema = new mongoose.Schema(
       type: Date,
     },
 
+    // 🔥 AUTO DELETE UNVERIFIED USERS AFTER 30 MIN
+    emailVerifyCreatedAt: {
+      type: Date,
+      default: Date.now,
+      expires: 1800, // 30 minutes (TTL)
+    },
+
     // ✅ FORGOT PASSWORD
     passwordResetOtp: {
       type: String,

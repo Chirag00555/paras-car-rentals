@@ -34,27 +34,47 @@ export const registerUser = async (req, res) => {
     }
 
     const userExists = await User.findOne({ email });
-    if (userExists) {
+
+    // ❌ Block only if already verified
+    if (userExists && userExists.isVerified) {
       return res.json({ success: false, message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOtp();
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      emailVerifyOtp: crypto.createHash("sha256").update(otp).digest("hex"),
-      emailVerifyOtpExpire: Date.now() + 10 * 60 * 1000,
-      isVerified: false,
-    });
+    let user;
+
+    // 🔁 Reuse unverified user
+    if (userExists && !userExists.isVerified) {
+      user = userExists;
+      user.name = name;
+      user.password = hashedPassword;
+      user.emailVerifyOtp = hashedOtp;
+      user.emailVerifyOtpExpire = Date.now() + 10 * 60 * 1000;
+      user.emailVerifyCreatedAt = Date.now(); // reset TTL timer
+    } 
+    // 🆕 New user
+    else {
+      user = new User({
+        name,
+        email,
+        password: hashedPassword,
+        emailVerifyOtp: hashedOtp,
+        emailVerifyOtpExpire: Date.now() + 10 * 60 * 1000,
+        isVerified: false,
+      });
+    }
+
+    await user.save();
 
     await sendEmail({
       email,
-      subject: "Verify your email - Paras Rentals",
+      subject: `Verify your email - Your OTP is ${otp}`,
       message: registerOtpTemplate(otp),
     });
+    
 
     res.json({ success: true, message: "OTP sent to email" });
 
@@ -63,6 +83,7 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 // Login user
 
@@ -146,6 +167,7 @@ export const verifyEmailOtp = async (req, res) => {
     user.isVerified = true;
     user.emailVerifyOtp = undefined;
     user.emailVerifyOtpExpire = undefined;
+    user.emailVerifyCreatedAt = undefined; // 🛑 stop auto-delete
 
     await user.save();
 
@@ -155,6 +177,7 @@ export const verifyEmailOtp = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 
 
@@ -271,6 +294,7 @@ export const resendOtp = async (req, res) => {
       subject: "Verify your email - Paras Rentals",
       message: registerOtpTemplate(otp),
     });
+    
 
     res.json({ success: true, message: "OTP resent successfully" });
 
