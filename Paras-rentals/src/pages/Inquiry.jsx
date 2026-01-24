@@ -3,7 +3,11 @@ import { useAppContext } from '../context/AppContext'
 import { toast } from 'react-hot-toast'
 import { motion } from 'motion/react'
 
+
+
 const Inquiry = () => {
+  
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { user } = useAppContext()
   const [formData, setFormData] = useState({
     name: '',
