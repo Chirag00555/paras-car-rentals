@@ -428,3 +428,51 @@ If you did not request this, please ignore this email.
 Regards,
 Paras Rentals
 `;
+
+
+const inquiryConfirmationTemplate = ({ name, message }) => {
+  return `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333">
+      <h2>Hello ${name},</h2>
+
+      <p>
+        Thank you for reaching out to <strong>Paras Rentals</strong>.
+      </p>
+
+      <p>
+        We have successfully received your query. Our team will review it and
+        get back to you shortly.
+      </p>
+
+      <p><strong>Your submitted message:</strong></p>
+
+      <div style="
+        background: #f4f4f4;
+        padding: 12px;
+        border-left: 4px solid #6366f1;
+        margin: 10px 0;
+      ">
+        ${message}
+      </div>
+
+      <p>
+        If your matter is urgent, you may reply directly to this email.
+      </p>
+
+      <br />
+
+      <p>
+        Regards,<br />
+        <strong>Paras Rentals Team</strong>
+      </p>
+
+      <hr />
+      <p style="font-size: 12px; color: #777">
+        This is an automated confirmation email. Please do not share sensitive
+        information via email.
+      </p>
+    </div>
+  `
+}
+
+export default inquiryConfirmationTemplate

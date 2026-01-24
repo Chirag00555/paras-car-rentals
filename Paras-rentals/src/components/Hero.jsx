@@ -6,7 +6,7 @@ import { motion } from 'motion/react'
 const Hero = () => {
   const [pickupLocation, setPickupLocation] = useState('')
 
-  const { pickupDate, setPickupDate, returnDate, setReturnDate, navigate } =
+  const { pickupDate, setPickupDate, returnDate, setReturnDate, navigate, user } =
     useAppContext()
 
   const handleSearch = (e) => {
@@ -32,16 +32,29 @@ const Hero = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="h-screen pt-20 sm:pt-0 flex flex-col items-center justify-center gap-14 bg-light text-center"
+      className="h-screen pt-34 sm:pt-0 flex flex-col items-center justify-center gap-14 bg-light text-center"
     >
-      <motion.h1
-        initial={{ y: 50, opacity: 0 }}
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="text-4xl md:text-5xl font-semibold"
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className="flex flex-col items-center gap-2"
       >
-        Paras Self Drive Car Rental
-      </motion.h1>
+        {/* Greeting — ONLY when logged in */}
+        {user && (
+          <p className="text-base sm:text-lg text-gray-600">
+            Hello, <span className="font-medium">{user.name}</span>, Welcome to
+          </p>
+        )}
+
+        {/* Brand name — ALWAYS visible */}
+        <h1 className="text-4xl md:text-5xl font-semibold">
+          Paras Self Drive Car Rental
+        </h1>
+      </motion.div>
+
+
+
 
       <motion.form
         initial={{ scale: 0.95, opacity: 0, y: 50 }}

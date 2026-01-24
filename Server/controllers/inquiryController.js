@@ -1,25 +1,25 @@
-
-import Inquiry from "../models/Inquiry.js";
+import Inquiry from "../models/Inquiry.js"
+import sendEmail from "../utils/sendEmail.js"
+import inquiryConfirmationTemplate from "../utils/emailTemplates.js"
 
 export const submitInquiry = async (req, res) => {
   try {
-    const body = req.body;
+    const body = req.body
 
-    // Safety check (important)
     if (!body || Object.keys(body).length === 0) {
       return res.status(400).json({
         success: false,
         message: "Request body is empty"
-      });
+      })
     }
 
-    const { name, phone, email, message } = body;
+    const { name, phone, email, message } = body
 
     if (!name || !phone || !email || !message) {
       return res.status(400).json({
         success: false,
         message: "All fields are required"
-      });
+      })
     }
 
     await Inquiry.create({
@@ -27,20 +27,26 @@ export const submitInquiry = async (req, res) => {
       phone,
       email,
       message
-    });
+    })
+
+    // ✅ Send confirmation email to USER
+    await sendEmail({
+      email,
+      subject: "We’ve received your inquiry – Paras Rentals",
+      message: inquiryConfirmationTemplate({ name, message })
+    })
 
     return res.status(201).json({
       success: true,
       message: "Inquiry submitted successfully"
-    });
+    })
 
   } catch (error) {
-    console.error("Inquiry Controller Error:", error);
+    console.error("Inquiry Controller Error:", error)
 
     return res.status(500).json({
       success: false,
       message: "Internal server error"
-    });
+    })
   }
-};
-
+}

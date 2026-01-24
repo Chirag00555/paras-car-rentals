@@ -23,6 +23,8 @@ import { Toaster } from 'react-hot-toast'
 import { useAppContext } from './context/AppContext'
 import AuthGuard from "./components/AuthGuard";
 import { AnimatePresence } from "motion/react";
+import About from './pages/Owner/About'
+import Sitemap from './pages/Sitemap'
 
 
 
@@ -66,9 +68,11 @@ const App = () => {
           }
         />
 
-        {/* <Route path='/about-us' element={<AboutUs/>}/> */}
+        <Route path='/about-us' element={<About/>}/>
 
         <Route path="/verify-email" element={<VerifyEmail />} />
+
+        <Route path="/sitemap" element={<Sitemap />} />
 
         <Route path="/inquiry" element={<Inquiry />} />
         <Route path='/owner' element={<Layout />}>
@@ -77,6 +81,8 @@ const App = () => {
         <Route path='manage-cars' element={<ManageCars/>}/>
         <Route path='manage-bookings' element={<ManageBookings/>}/>
         <Route path='manage-Queries' element={<ManageQueries/>}/>
+        
+
 
         </Route>
       

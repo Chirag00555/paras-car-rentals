@@ -1,6 +1,7 @@
 import React from 'react'
 import { assets } from '../assets/assets'
 import { motion } from 'motion/react'
+import { Link } from "react-router-dom"
 
 const Footer = () => {
 
@@ -17,32 +18,77 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }} 
             className='flex flex-wrap justify-between items-start gap-8 pb-6 border-borderColor border-b'>
-                <div>
-                    <motion.img 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    src={assets.logoNew} alt="logo" className='h-8 md:h-9' />
-                    <motion.p 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className='max-w-80 mt-3'>
-                        Premium car rental service with a wide selection of luxury and everyday vehicles for all your driving needs.
-                    </motion.p>
-                    <motion.div 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className='flex items-center gap-3 mt-6'>
-                        {/* <a href="#"> <img src={assets.facebook_logo} alt="facebook" className='w-5 h-5'/> </a> */}
-                        <a href={insta}> <img src={assets.instagram_logo} alt="instagram" className='w-5 h-5'/> </a>
-                        {/* <a href=""> <img src={assets.twitter_logo} alt="twitter" className='w-5 h-5'/> </a> */}
-                        <a href="#"> <img src={assets.gmail_logo} alt="Gmail" className='w-5 h-5'/> </a>
-                        
-                        
-                    </motion.div>
-                </div>
+<div>
+  {/* Logo */}
+  <motion.img
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    transition={{ duration: 0.5, delay: 0.3 }}
+    src={assets.logoNew}
+    alt="logo"
+    className="h-8 md:h-9"
+  />
+
+  {/* Description */}
+  <motion.p
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    transition={{ duration: 0.5, delay: 0.4 }}
+    className="max-w-80 mt-3 text-gray-600"
+  >
+    Premium car rental service with a wide selection of luxury and everyday
+    vehicles for all your driving needs.
+  </motion.p>
+
+  {/* Social + Contact Icons */}
+  <motion.div
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    transition={{ duration: 0.5, delay: 0.5 }}
+    className="flex items-center gap-4 mt-6"
+  >
+    {/* Instagram */}
+    <a
+      href={insta}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Instagram"
+    >
+      <img
+        src={assets.instagram_logo}
+        alt="Instagram"
+        className="w-5 h-5 hover:scale-110 transition"
+      />
+    </a>
+
+    {/* Email */}
+    <a
+      href="mailto:Parasbhurrak1234@mail.com"
+      aria-label="Email"
+    >
+      <img
+        src={assets.gmail_logo}
+        alt="Email"
+        className="w-5 h-5 hover:scale-110 transition"
+      />
+    </a>
+
+    {/* Call */}
+    <a
+      href="tel:+918871930783"
+      aria-label="Call"
+    >
+      <img
+        src={assets.call}
+        alt="Phone"
+        className="w-5 h-5 hover:scale-110 transition"
+      />
+    </a>
+ 
+  </motion.div>
+</div>
+
+
 
                 <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -57,7 +103,7 @@ const Footer = () => {
                         <li><a href="/">Home</a></li>
                         <li><a href="/cars">Browse Cars</a></li>
                         <li><a href="/inquiry">Query</a></li>
-                        <li><a href="#">About us</a></li>
+                        <li><a href="/about-us">About us</a></li>
                     </ul>
                 </div>
 
@@ -65,7 +111,7 @@ const Footer = () => {
                 <div>
                     <h2 className='text-base font-medium text-gray-800 uppercase'>Resources</h2>
                     <ul className='mt-3 flex flex-col gap-1.5'>
-                        <li><a href="#">Help Center</a></li>
+                        <li><a href="/inquiry">Help Center</a></li>
                         <li><a href="#">Terms of Service</a></li>
                         <li><a href="#">Privacy Policy</a></li>
                         
@@ -73,14 +119,36 @@ const Footer = () => {
                 </div>
 
                 <div>
-                    <h2 className='text-base font-medium text-gray-800 uppercase'>Contact</h2>
-                    <ul className='mt-3 flex flex-col gap-1.5'>
-                        <li>Sainik Colony, Madan Mahal</li>
-                        <li>Jabalpur, 482002</li>
-                        <li>+91 8871930783</li>
-                        <li>parasrentals69@mail.com</li>
-                    </ul>
+                <h2 className="text-base font-medium text-gray-800 uppercase">
+                    Contact
+                </h2>
+
+                <ul className="mt-3 flex flex-col gap-1.5 text-gray-600">
+                    <li>Sainik Colony, Madan Mahal</li>
+                    <li>Jabalpur, 482002</li>
+
+                    {/* Phone */}
+                    <li>
+                    <a
+                        href="tel:+918871930783"
+                        className="hover:text-primary transition"
+                    >
+                        +91 8871930783
+                    </a>
+                    </li>
+
+                    {/* Email */}
+                    <li>
+                    <a
+                        href="mailto:Parasbhurrak1234@mail.com"
+                        className="hover:text-primary transition"
+                    >
+                        Parasbhurrak1234@mail.com
+                    </a>
+                    </li>
+                </ul>
                 </div>
+
 
 
                 </motion.div>
@@ -111,7 +179,8 @@ const Footer = () => {
                     <li>|</li>
                     <li><a href="#">Terms</a></li>
                     <li>|</li>
-                    <li><a href="#">Sitemap</a></li>
+                    <Link to="/sitemap" className="hover:text-primary">Sitemap</Link>
+
                 </ul>
             </motion.div>
         </motion.div>

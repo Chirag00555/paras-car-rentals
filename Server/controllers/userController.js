@@ -8,8 +8,10 @@ import generateOtp from "../utils/generateOtp.js";
 
 import {
   registerOtpTemplate,
-  forgotPasswordOtpTemplate
+  forgotPasswordOtpTemplate,
 } from "../utils/emailTemplates.js";
+
+
 
 
 
@@ -276,4 +278,8 @@ export const resendOtp = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+
+
 

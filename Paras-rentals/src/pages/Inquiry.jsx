@@ -30,44 +30,49 @@ const Inquiry = () => {
     }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+const handleSubmit = async (e) => {
+  e.preventDefault()
 
-    const { name, phone, email, message } = formData
+  if (isSubmitting) return   // ⛔ prevent multiple clicks
+  setIsSubmitting(true)
 
-    if (!name || !phone || !email || !message) {
-      toast.error('Please fill all fields')
-      return
-    }
+  const { name, phone, email, message } = formData
 
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/submit`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        }
-      )
-
-      const data = await res.json()
-
-      if (res.ok && data.success) {
-        toast.success('Inquiry submitted successfully')
-        setFormData((prev) => ({
-          ...prev,
-          phone: '',
-          message: ''
-        }))
-      } else {
-        toast.error(data.message || 'Failed to submit inquiry')
-      }
-    } catch (error) {
-      toast.error('Server error. Please try again later')
-    }
+  if (!name || !phone || !email || !message) {
+    toast.error('Please fill all fields')
+    setIsSubmitting(false)
+    return
   }
+
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/user/submit`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      }
+    )
+
+    const data = await res.json()
+
+    if (res.ok && data.success) {
+      toast.success('Inquiry submitted successfully')
+      setFormData((prev) => ({
+        ...prev,
+        phone: '',
+        message: ''
+      }))
+    } else {
+      toast.error(data.message || 'Failed to submit inquiry')
+    }
+  } catch (error) {
+    toast.error('Server error. Please try again later')
+  } finally {
+    setIsSubmitting(false)
+  }
+}
+
 
   return (
     <motion.form
@@ -103,10 +108,10 @@ const Inquiry = () => {
       >
         Or just reach out manually to us at{' '}
         <a
-          href="#"
+          href="mailto:Parasbhurrak1234@mail.com"
           className="text-indigo-600 hover:underline"
         >
-          parasrentels69@gmail.com
+          parasbhurrak1234@gmail.com
         </a>
       </motion.p>
 
@@ -173,14 +178,20 @@ const Inquiry = () => {
           required
         ></textarea>
 
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          type="submit"
-          className="flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-full rounded-full transition"
-        >
-          Submit Form
-        </motion.button>
+<motion.button
+  whileHover={!isSubmitting ? { scale: 1.03 } : {}}
+  whileTap={!isSubmitting ? { scale: 0.97 } : {}}
+  type="submit"
+  disabled={isSubmitting}
+  className={`flex items-center justify-center gap-1 mt-5 py-2.5 w-full rounded-full transition
+    ${isSubmitting
+      ? 'bg-indigo-300 cursor-not-allowed'
+      : 'bg-indigo-500 hover:bg-indigo-600 text-white'}
+  `}
+>
+  {isSubmitting ? 'Submitting...' : 'Submit Form'}
+</motion.button>
+
       </motion.div>
     </motion.form>
   )

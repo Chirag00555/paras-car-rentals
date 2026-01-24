@@ -22,7 +22,8 @@ import {
     verifyEmailOtp,
     forgotPassword,
     resetPassword,
-    resendOtp
+    resendOtp,
+     
 } from '../controllers/userController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -46,5 +47,6 @@ userRouter.get('/cars', getCars);
 userRouter.post("/forgot-password", forgotPassword);
 userRouter.post("/reset-password", resetPassword);
 userRouter.post("/resend-otp", resendOtp);
+
 
 export default userRouter;

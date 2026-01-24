@@ -45,6 +45,8 @@ import arpit from "./Arpit.jpeg"
 import yuvraj from "./Yuvraj.jpeg"
 import logoNew from "./logoNew.png"
 import logoSmall from "./logoSmall.png"
+import paras_founder from "./paras_founder.jpeg"
+import call from "./call.png"
 
 export const cityList = ['Jabalpur']
 
@@ -95,7 +97,9 @@ export const assets = {
     arpit,
     yuvraj,
     logoNew,
-    logoSmall
+    logoSmall,
+    paras_founder,
+    call
 }
 
 export const menuLinks = [
@@ -104,7 +108,7 @@ export const menuLinks = [
     { name: "My Bookings", path: "/my-bookings" },
     { name: "Query", path: "/inquiry"},
     { name: "Coupons", path: "/coupons"},
-    // { name: "About Us", path: "/about-us"},
+    { name: "About Us", path: "/about-us"},
 ]
 
 export const ownerMenuLinks = [
