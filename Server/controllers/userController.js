@@ -17,9 +17,9 @@ import {
 
 // Generate JWT token
 
-const generateToken = (userId)=>{
-    const payload = userId;
-    return jwt.sign(payload, process.env.JWT_SECRET)
+const generateToken = (userId) => {
+  const payload = { id: userId };
+  return jwt.sign(payload, process.env.JWT_SECRET)
 }
 
 
@@ -54,7 +54,7 @@ export const registerUser = async (req, res) => {
       user.emailVerifyOtp = hashedOtp;
       user.emailVerifyOtpExpire = Date.now() + 10 * 60 * 1000;
       user.emailVerifyCreatedAt = Date.now(); // reset TTL timer
-    } 
+    }
     // 🆕 New user
     else {
       user = new User({
@@ -74,7 +74,7 @@ export const registerUser = async (req, res) => {
       subject: `Verify your email - Your OTP is ${otp}`,
       message: registerOtpTemplate(otp),
     });
-    
+
 
     res.json({ success: true, message: "OTP sent to email" });
 
@@ -87,55 +87,55 @@ export const registerUser = async (req, res) => {
 
 // Login user
 
-export const loginUser = async (req, res)=>{
-    try {
-        const {email, password} = req.body
-        const user = await User.findOne({email})
-        if(!user){
-            return res.json({success: false, message: 'User not found'})
-        }
-        const isMatch = await bcrypt.compare(password, user.password)
-        if(!isMatch){
-            return res.json({success: false, message: 'Invalid credentials'})
-        }
-
-        const token = generateToken(user._id.toString())
-        // const token = jwt.sign(  
-        //     { id: user._id.toString() },
-        //     process.env.JWT_SECRET,
-        //     { expiresIn: "7d" }
-        // );
-
-        res.json({success: true, token})
-
-    } catch (error) {
-        console.log(error.message);
-        return res.json({success : false, message: error.message})
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' })
     }
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) {
+      return res.json({ success: false, message: 'Invalid credentials' })
+    }
+
+    const token = generateToken(user._id.toString())
+    // const token = jwt.sign(  
+    //     { id: user._id.toString() },
+    //     process.env.JWT_SECRET,
+    //     { expiresIn: "7d" }
+    // );
+
+    res.json({ success: true, token })
+
+  } catch (error) {
+    console.log(error.message);
+    return res.json({ success: false, message: error.message })
+  }
 }
 
 // get user data
 
-export const getUserData = async (req, res)=>{
-    try {
-        const {user} = req;
-        res.json({success: true, user})
-    } catch (error) {
-        console.log(error.message);
-        return res.json({success : false, message: error.message})
-    }
+export const getUserData = async (req, res) => {
+  try {
+    const { user } = req;
+    res.json({ success: true, user })
+  } catch (error) {
+    console.log(error.message);
+    return res.json({ success: false, message: error.message })
+  }
 }
 
 // Get all cars for the frontend
 
-export const getCars = async (req, res)=>{
-    try {
-        const cars = await Car.find({isAvailable: true})
-        return res.json({success : true, cars})
-    } catch (error) {
-        console.log(error.message);
-        return res.json({success : false, message: error.message})
-    }
+export const getCars = async (req, res) => {
+  try {
+    const cars = await Car.find({ isAvailable: true })
+    return res.json({ success: true, cars })
+  } catch (error) {
+    console.log(error.message);
+    return res.json({ success: false, message: error.message })
+  }
 }
 
 
@@ -294,7 +294,7 @@ export const resendOtp = async (req, res) => {
       subject: "Verify your email - Paras Rentals",
       message: registerOtpTemplate(otp),
     });
-    
+
 
     res.json({ success: true, message: "OTP resent successfully" });
 

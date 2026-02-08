@@ -1,25 +1,26 @@
 import jwt from "jsonwebtoken"
 import User from "../models/User.js";
 
-export const protect = async (req, res, next)=>{
+export const protect = async (req, res, next) => {
 
-   
+
 
     const token = req.headers.authorization;
-    if(!token){
-        return res.json({success: false, message: "Not Authorised"})
+    if (!token) {
+        return res.json({ success: false, message: "Not Authorised" })
     }
     try {
-        const userId = jwt.decode(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const userId = decoded.id; // The payload itself was the userId in generateToken
 
-        if(!userId){
-            return res.json({success: false, message: "Not Authorised"})
+        if (!userId) {
+            return res.json({ success: false, message: "Not Authorised" })
         }
 
         req.user = await User.findById(userId).select("-password")
         next();
     } catch (error) {
-        return res.json({success: false, message: "Not Authorised"})
+        return res.json({ success: false, message: "Not Authorised" })
     }
 }
 
