@@ -1,6 +1,6 @@
-    import Booking from "../models/Booking.js"
-    import sendEmail from "../utils/sendEmail.js";
-    import { v4 as uuidv4 } from 'uuid'
+import Booking from "../models/Booking.js"
+import sendEmail from "../utils/sendEmail.js";
+import { v4 as uuidv4 } from 'uuid'
 import {
   ownerBookingRequestTemplate,
   customerBookingRequestTemplate,
@@ -11,31 +11,31 @@ import {
 } from "../utils/emailTemplates.js";
 
 
-    // fucntion to check availaibility of car for a given data
+// fucntion to check availaibility of car for a given data
 
-    import Car from "../models/Car.js";
+import Car from "../models/Car.js";
 
-    // const checkAvailaibility = async (car, pickupDateTime, returnDateTime) => {
-    //     const bookings = await Booking.find({
-    //         car,
-    //         pickupDateTime: { $lte: returnDateTime },
-    //         returnDateTime: { $gte: pickupDateTime }
-    //     })
+// const checkAvailaibility = async (car, pickupDateTime, returnDateTime) => {
+//     const bookings = await Booking.find({
+//         car,
+//         pickupDateTime: { $lte: returnDateTime },
+//         returnDateTime: { $gte: pickupDateTime }
+//     })
 
-    //     return bookings.length === 0
-    // }
-    // utils/dateFormatter.js (optional later)
-    const formatIST = (dateTime) => {
-      return new Date(dateTime).toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true
-      })
-    }
+//     return bookings.length === 0
+// }
+// utils/dateFormatter.js (optional later)
+const formatIST = (dateTime) => {
+  return new Date(dateTime).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  })
+}
 
 
 const checkAvailability = async (
@@ -73,55 +73,55 @@ const checkAvailability = async (
 
 
 
-    //API to check availability of cars for the given Date and location 
+//API to check availability of cars for the given Date and location 
 
-  export const checkAvailaibilityOfCar = async (req, res) => {
-        try {
-            const { location, pickupDate, returnDate } = req.body
+export const checkAvailaibilityOfCar = async (req, res) => {
+  try {
+    const { location, pickupDate, returnDate } = req.body
 
-            if (!pickupDate || !returnDate) {
-            return res.json({
-                success: false,
-                message: 'Pickup and return date-time required'
-            })
-            }
+    if (!pickupDate || !returnDate) {
+      return res.json({
+        success: false,
+        message: 'Pickup and return date-time required'
+      })
+    }
 
-            const cars = await Car.find({
-            location,
-            isAvailable: true
-            })
+    const cars = await Car.find({
+      location,
+      isAvailable: true
+    })
 
-            const availableCars = []
+    const availableCars = []
 
-            for (const car of cars) {
-            const isAvailable = await checkAvailability(
-                car._id,
-                pickupDate,
-                returnDate
-            )
+    for (const car of cars) {
+      const isAvailable = await checkAvailability(
+        car._id,
+        pickupDate,
+        returnDate
+      )
 
-            if (isAvailable) {
-                availableCars.push(car)
-            }
-            }
+      if (isAvailable) {
+        availableCars.push(car)
+      }
+    }
 
-            res.json({
-            success: true,
-            availableCars
-            })
+    res.json({
+      success: true,
+      availableCars
+    })
 
-        } catch (error) {
-            console.log(error)
-            res.json({
-            success: false,
-            message: error.message
-            })
-        }
-        }
+  } catch (error) {
+    console.log(error)
+    res.json({
+      success: false,
+      message: error.message
+    })
+  }
+}
 
 
 
-    // API to create booking 
+// API to create booking 
 export const createBooking = async (req, res) => {
   try {
     const { _id } = req.user
@@ -159,9 +159,9 @@ export const createBooking = async (req, res) => {
       return res.json({ success: false, message: "Drop location required" })
     }
 
-// ✅ Convert IST → UTC before creating Date
-  const pickup = new Date(pickupDateTime + ":00+05:30")
-  const drop = new Date(returnDateTime + ":00+05:30")
+    // ✅ Parse datetime without adding offset (browser sends local time)
+    const pickup = new Date(pickupDateTime)
+    const drop = new Date(returnDateTime)
 
 
     if (isNaN(pickup.getTime()) || isNaN(drop.getTime())) {
@@ -180,16 +180,16 @@ export const createBooking = async (req, res) => {
       })
     }
 
-const isRestrictedTime = (date) => {
-  const istDate = new Date(
-    date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
-  )
+    const isRestrictedTime = (date) => {
+      const istDate = new Date(
+        date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
+      )
 
-  const h = istDate.getHours()
-  const m = istDate.getMinutes()
+      const h = istDate.getHours()
+      const m = istDate.getMinutes()
 
-  return (h === 23 && m >= 30) || (h >= 0 && h < 7)
-}
+      return (h === 23 && m >= 30) || (h >= 0 && h < 7)
+    }
 
 
     if (isRestrictedTime(pickup)) {
@@ -254,7 +254,7 @@ const isRestrictedTime = (date) => {
     const bookingId = `BK-${uuidv4().slice(0, 8).toUpperCase()}`
 
     const booking = await Booking.create({
-      bookingId, 
+      bookingId,
       car: carId,
       user: _id,
       pickupDateTime,
@@ -268,20 +268,20 @@ const isRestrictedTime = (date) => {
       status: 'pending'
     })
 
-        // 📧 EMAIL NOTIFICATIONS (NON-BREAKING ADDITION)
+    // 📧 EMAIL NOTIFICATIONS (NON-BREAKING ADDITION)
     try {
-    const bookingData = {
-      bookingId: booking.bookingId,
-      customerName: req.user.name,
-      carName: `${carData.brand} ${carData.model}`,
-      pickup: formatIST(booking.pickupDateTime),
-      return: formatIST(booking.returnDateTime),
-      status: "Pending"
-    }
+      const bookingData = {
+        bookingId: booking.bookingId,
+        customerName: req.user.name,
+        carName: `${carData.brand} ${carData.model}`,
+        pickup: formatIST(booking.pickupDateTime),
+        return: formatIST(booking.returnDateTime),
+        status: "Pending"
+      }
 
 
       // Email to OWNER
-      
+
 
       await sendEmail({
         email: process.env.EMAIL_USER,
@@ -311,68 +311,68 @@ const isRestrictedTime = (date) => {
 
 
 
-    //API to list user bookings
+//API to list user bookings
 
-    export const getUserBookings = async (req, res)=>{
-        try {
-            const {_id} = req.user;
-            const bookings = await Booking.find({ user: _id}).populate("car").sort({createdAt: -1})
+export const getUserBookings = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const bookings = await Booking.find({ user: _id }).populate("car").sort({ createdAt: -1 })
 
-            res.json({success: true, bookings})
+    res.json({ success: true, bookings })
 
-        } catch (error) {
-            console.log(error.message);
-            res.json({success: false, message: error.message})
-        }
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message })
+  }
+}
+
+//API to get owner bookings
+
+export const getOwnerBookings = async (req, res) => {
+  try {
+    if (req.user.role !== 'owner') {
+      return res.json({ success: false, message: "Not Authorized" })
     }
 
-    //API to get owner bookings
+    const bookings = await Booking.find().populate('car user').select("-user.password").sort({ createdAt: -1 })
 
-    export const getOwnerBookings = async (req, res)=>{
-        try {
-            if(req.user.role !== 'owner'){
-                return res.json({success: false, message: "Not Authorized"})
-            }
+    res.json({ success: true, bookings })
 
-            const bookings = await Booking.find().populate('car user').select("-user.password").sort({createdAt: -1})
-
-            res.json({success: true, bookings})
-
-        } catch (error) {
-            console.log(error.message);
-            res.json({success: false, message: error.message})
-        }
-    }
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message })
+  }
+}
 
 
-    //API to change booking status
+//API to change booking status
 
-    // export const ChangeBookingStatus = async (req, res)=>{
-    //     console.log("ROLE:", req.user.role)
+// export const ChangeBookingStatus = async (req, res)=>{
+//     console.log("ROLE:", req.user.role)
 
-    //     try {
-    //         const {_id} = req.user;
-    //         const {bookingId, status} = req.body
+//     try {
+//         const {_id} = req.user;
+//         const {bookingId, status} = req.body
 
-    //         const booking = await Booking.findById(bookingId)
-    //         // if(booking.owner.toString() !== _id.toString()){
-    //         //     return res.json({success: false, message: "Unauthorized"})
-    //         // }
-    //         if (req.user.role !== "owner") {
-    //             return res.json({ success: false, message: "Unauthorized" })
-    //         }
+//         const booking = await Booking.findById(bookingId)
+//         // if(booking.owner.toString() !== _id.toString()){
+//         //     return res.json({success: false, message: "Unauthorized"})
+//         // }
+//         if (req.user.role !== "owner") {
+//             return res.json({ success: false, message: "Unauthorized" })
+//         }
 
 
-    //         booking.status = status;
-    //         await booking.save()
+//         booking.status = status;
+//         await booking.save()
 
-    //         res.json({success: true, message: "Status updated"})
-            
-    //     } catch (error) {
-    //         console.log(error.message);
-    //         res.json({success: false, message: error.message})
-    //     }
-    // }
+//         res.json({success: true, message: "Status updated"})
+
+//     } catch (error) {
+//         console.log(error.message);
+//         res.json({success: false, message: error.message})
+//     }
+// }
 
 // export const changeBookingStatus = async (req, res) => {
 //   console.log("STATUS RECEIVED FROM FRONTEND 👉", status);
