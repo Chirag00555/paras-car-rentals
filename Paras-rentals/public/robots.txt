@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://paras-car-rentals.shop/sitemap.xml
