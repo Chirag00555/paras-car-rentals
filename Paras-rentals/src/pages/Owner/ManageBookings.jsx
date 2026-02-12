@@ -199,7 +199,7 @@ const ManageBookings = () => {
                     <select
                       value={booking.status}
                       onChange={(e) =>
-                        changeBookingStatus(booking._id, e.target.value)
+                        changeBookingStatus(booking.bookingId, e.target.value)
                       }
                       className={`px-3 py-1.5 rounded-md outline-none ${getStatusClass(
                         booking.status
