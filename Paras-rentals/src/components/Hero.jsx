@@ -12,12 +12,12 @@ const Hero = () => {
   const handleSearch = (e) => {
     e.preventDefault()
     navigate(
-      '/cars?pickuplocation=' +
-        pickupLocation +
-        '&pickupDate=' +
-        pickupDate +
-        '&returnDate=' +
-        returnDate
+      '/cars?pickupLocation=' +
+      pickupLocation +
+      '&pickupDate=' +
+      pickupDate +
+      '&returnDate=' +
+      returnDate
     )
   }
 

@@ -58,7 +58,7 @@ const checkAvailability = async (
     }
   }
 
-  // ✅ THIS IS THE MISSING PART
+  // ✅ Exclude specific booking if provided
   if (excludeBookingId) {
     query._id = { $ne: excludeBookingId }
   }
@@ -93,11 +93,16 @@ export const checkAvailaibilityOfCar = async (req, res) => {
 
     const availableCars = []
 
+    // ✅ Convert date-only to full datetime range
+    // If input is "2026-02-12", check from 00:00:00 to end of return day 23:59:59
+    const pickupDateTime = pickupDate.includes('T') ? pickupDate : `${pickupDate}T00:00:00`
+    const returnDateTime = returnDate.includes('T') ? returnDate : `${returnDate}T23:59:59`
+
     for (const car of cars) {
       const isAvailable = await checkAvailability(
         car._id,
-        pickupDate,
-        returnDate
+        pickupDateTime,
+        returnDateTime
       )
 
       if (isAvailable) {
