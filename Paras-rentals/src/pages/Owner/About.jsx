@@ -23,7 +23,7 @@ const About = () => {
             className="flex-1 bg-[#F8FAFC] flex flex-col items-center justify-center p-8 order-1"
           >
             <img
-              src={assets.paras_founder}
+              src={assets.founder}
               alt="Paras Bhurrak"
               className="w-120 h-120 object-cover rounded-xl shadow-lg"
             />

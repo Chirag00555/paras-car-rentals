@@ -47,6 +47,7 @@ import logoNew from "./logoNew.png"
 import logoSmall from "./logoSmall.png"
 import paras_founder from "./paras_founder.jpeg"
 import call from "./call.png"
+import founder from "./Founder.jpeg"
 
 export const cityList = ['Jabalpur']
 
@@ -99,7 +100,8 @@ export const assets = {
     logoNew,
     logoSmall,
     paras_founder,
-    call
+    call,
+    founder
 }
 
 export const menuLinks = [
