@@ -16,6 +16,7 @@ const Login = () => {
     setShowOtp,
     setShowForgotPassword,
     setAuthModalReason,
+    authModalReason,
   } = useAppContext()
 
   const [state, setState] = React.useState("login")
@@ -54,8 +55,13 @@ const Login = () => {
         setToken(data.token)
         localStorage.setItem("token", data.token)
         setShowLogin(false)
+
+        // Don't redirect if user was trying to book a car
+        if (authModalReason !== 'booking') {
+          navigate("/")
+        }
+
         setAuthModalReason(null)
-        navigate("/")
       }
 
     } catch (error) {
