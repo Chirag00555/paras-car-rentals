@@ -63,7 +63,7 @@ const Footer = () => {
 
     {/* Email */}
     <a
-      href="mailto:Parasbhurrak1234@mail.com"
+      href="mailto:Parasbhurrak1234@gmail.com"
       aria-label="Email"
     >
       <img
@@ -140,10 +140,10 @@ const Footer = () => {
                     {/* Email */}
                     <li>
                     <a
-                        href="mailto:Parasbhurrak1234@mail.com"
+                        href="mailto:Parasbhurrak1234@gmail.com"
                         className="hover:text-primary transition"
                     >
-                        Parasbhurrak1234@mail.com
+                        Parasbhurrak1234@gmail.com
                     </a>
                     </li>
                 </ul>

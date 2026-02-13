@@ -112,7 +112,7 @@ const handleSubmit = async (e) => {
       >
         Or just reach out manually to us at{' '}
         <a
-          href="mailto:Parasbhurrak1234@mail.com"
+          href="mailto:Parasbhurrak1234@gmail.com"
           className="text-indigo-600 hover:underline"
         >
           parasbhurrak1234@gmail.com
