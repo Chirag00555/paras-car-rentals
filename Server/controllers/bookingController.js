@@ -186,12 +186,9 @@ export const createBooking = async (req, res) => {
     }
 
     const isRestrictedTime = (date) => {
-      const istDate = new Date(
-        date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
-      )
-
-      const h = istDate.getHours()
-      const m = istDate.getMinutes()
+      // Date is already in local time, no need to convert
+      const h = date.getHours()
+      const m = date.getMinutes()
 
       return (h === 23 && m >= 30) || (h >= 0 && h < 7)
     }
