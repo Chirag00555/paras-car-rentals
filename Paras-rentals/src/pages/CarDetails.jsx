@@ -374,7 +374,7 @@ const CarDetails = () => {
               </ul>
 
               <p className="text-[11px] text-gray-500 mt-1">
-                *Includes 1 hour buffer after each booking
+                *Excludes 1 hour buffer after each booking
               </p>
             </div>
           )}
