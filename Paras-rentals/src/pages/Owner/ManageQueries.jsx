@@ -52,6 +52,23 @@ const ManageQueries = () => {
     toast.success('Copied')
   }
 
+  const deleteQuery = async (id) => {
+    if (!confirm('Are you sure you want to delete this query?')) return
+
+    try {
+      const { data } = await axios.delete(`/api/owner/queries/${id}`)
+
+      if (data.success) {
+        setQueries(prev => prev.filter(q => q._id !== id))
+        toast.success('Query deleted')
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   useEffect(() => {
     isOwner && fetchQueries()
   }, [isOwner])
@@ -88,9 +105,8 @@ const ManageQueries = () => {
               {queries.map((q, index) => (
                 <Fragment key={q._id}>
                   <tr
-                    className={`border-t border-borderColor ${
-                      q.resolved ? 'bg-green-50' : ''
-                    }`}
+                    className={`border-t border-borderColor ${q.resolved ? 'bg-green-50' : ''
+                      }`}
                   >
                     {/* Sr No (FIXED) */}
                     <td className="p-3 sticky left-0 z-10 bg-white border-r border-borderColor">
@@ -105,9 +121,9 @@ const ManageQueries = () => {
                           {q.email}
                         </span>
                         <button
-                          onClick={() => copyBookingId(booking.bookingId)}
+                          onClick={() => copyText(q.email)}
                           className="hover:text-primary"
-                          title="Copy Booking ID"
+                          title="Copy Email"
                         >
                           <Copy size={14} />
                         </button>
@@ -120,9 +136,9 @@ const ManageQueries = () => {
                           {q.phone}
                         </span>
                         <button
-                          onClick={() => copyBookingId(booking.bookingId)}
+                          onClick={() => copyText(q.phone)}
                           className="hover:text-primary"
-                          title="Copy Booking ID"
+                          title="Copy Phone"
                         >
                           <Copy size={14} />
                         </button>
@@ -156,7 +172,11 @@ const ManageQueries = () => {
                     </td>
 
                     <td className="p-3 text-center">
-                      <button className="text-xl text-red-500 hover:scale-110 transition">
+                      <button
+                        onClick={() => deleteQuery(q._id)}
+                        className="text-xl text-red-500 hover:scale-110 transition"
+                        title="Delete Query"
+                      >
                         🗑
                       </button>
                     </td>

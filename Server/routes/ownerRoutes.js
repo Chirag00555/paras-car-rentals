@@ -12,7 +12,8 @@ import {
 
 import {
   getAllQueries,
-  toggleQueryResolved
+  toggleQueryResolved,
+  deleteQuery
 } from "../controllers/ownerInquiryController.js";
 
 
@@ -33,7 +34,7 @@ const ownerRouter = express.Router();
 //   addCar
 // );
 
-ownerRouter.post("/update-image", upload.single('image'), protect,  updateUserImage)
+ownerRouter.post("/update-image", upload.single('image'), protect, updateUserImage)
 
 // ownerRouter.put(
 //   "/update-car/:id",
@@ -45,7 +46,7 @@ ownerRouter.post("/update-image", upload.single('image'), protect,  updateUserIm
 //   ]),
 //   updateCar
 // );
-ownerRouter.post("/add-car", upload.single('image'), protect,  addCar)
+ownerRouter.post("/add-car", upload.single('image'), protect, addCar)
 ownerRouter.get("/cars", protect, isOwner, getOwnerCars);
 ownerRouter.post("/toggle-car", protect, isOwner, toggleCarAvailaibility);
 ownerRouter.post("/delete-car", protect, isOwner, deleteCar);
@@ -53,5 +54,6 @@ ownerRouter.get("/dashboard", protect, isOwner, getDashboardData);
 
 ownerRouter.get("/queries", protect, getAllQueries);
 ownerRouter.patch("/queries/:id", protect, toggleQueryResolved);
+ownerRouter.delete("/queries/:id", protect, deleteQuery);
 
 export default ownerRouter;

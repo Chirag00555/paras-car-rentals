@@ -36,3 +36,22 @@ export const toggleQueryResolved = async (req, res) => {
     });
   }
 };
+
+// DELETE query
+export const deleteQuery = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Inquiry.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: "Query deleted successfully"
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message
+    });
+  }
+};
