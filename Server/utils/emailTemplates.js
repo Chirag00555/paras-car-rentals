@@ -1,4 +1,4 @@
-const formatIST = (dateTime) => {
+export const formatIST = (dateTime) => {
   return new Date(dateTime).toLocaleString("en-IN", {
     timeZone: "Asia/Kolkata",
     day: "2-digit",
@@ -22,8 +22,8 @@ Booking ID: ${booking.bookingId}
 Customer Name: ${booking.customerName}
 Phone: ${booking.phone}
 Car: ${booking.carName}
-Pickup: ${formatIST(booking.pickupDateTime)}
-Return: ${formatIST(booking.returnDateTime)}
+Pickup: ${formatIST(booking.pickup)}
+Return: ${formatIST(booking.return)}
 
 Current Status: Pending
 

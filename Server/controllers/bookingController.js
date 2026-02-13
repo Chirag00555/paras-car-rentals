@@ -7,7 +7,8 @@ import {
   bookingConfirmedTemplate,
   bookingDeclinedTemplate,
   bookingCancelledTemplate,
-  bookingCompletedTemplate
+  bookingCompletedTemplate,
+  formatIST
 } from "../utils/emailTemplates.js";
 
 
@@ -24,18 +25,7 @@ import Car from "../models/Car.js";
 
 //     return bookings.length === 0
 // }
-// utils/dateFormatter.js (optional later)
-const formatIST = (dateTime) => {
-  return new Date(dateTime).toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true
-  })
-}
+
 
 
 const checkAvailability = async (
@@ -259,8 +249,8 @@ export const createBooking = async (req, res) => {
       bookingId,
       car: carId,
       user: _id,
-      pickupDateTime,
-      returnDateTime,
+      pickupDateTime: pickup,
+      returnDateTime: drop,
       phone,
       pickupService,
       dropService,
@@ -275,9 +265,10 @@ export const createBooking = async (req, res) => {
       const bookingData = {
         bookingId: booking.bookingId,
         customerName: req.user.name,
+        phone: booking.phone,
         carName: `${carData.brand} ${carData.model}`,
-        pickup: formatIST(booking.pickupDateTime),
-        return: formatIST(booking.returnDateTime),
+        pickup: formatIST(pickup),
+        return: formatIST(drop),
         status: "Pending"
       }
 
