@@ -164,9 +164,9 @@ export const createBooking = async (req, res) => {
       return res.json({ success: false, message: "Drop location required" })
     }
 
-    // ✅ Parse datetime without adding offset (browser sends local time)
-    const pickup = new Date(pickupDateTime)
-    const drop = new Date(returnDateTime)
+    // ✅ Add IST offset for correct storage in MongoDB
+    const pickup = new Date(pickupDateTime + "+05:30")
+    const drop = new Date(returnDateTime + "+05:30")
 
 
     if (isNaN(pickup.getTime()) || isNaN(drop.getTime())) {
